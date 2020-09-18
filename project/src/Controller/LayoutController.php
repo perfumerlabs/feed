@@ -24,4 +24,14 @@ class LayoutController extends ViewController
             $this->forward('error', 'badRequest', ["\"$name\" parameter is invalid, only letters, digits and underscore signs are allowed"]);
         }
     }
+
+    protected function validateCollection(string $collection)
+    {
+        $this->validateNotEmpty($collection, 'collection');
+        $this->validateRegex($collection, 'collection', '/^[a-z0-9_]+$/');
+
+        if(!$this->s('database')->hasCollection($collection)){
+            $this->forward('error', 'badRequest', ["Collection \"$collection\" not found"]);
+        }
+    }
 }
