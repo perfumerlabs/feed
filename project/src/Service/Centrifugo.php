@@ -77,27 +77,29 @@ class Centrifugo
         ];
     }
 
-    public function sendRecord($recipient, $data)
+    public function sendRecord($recipient, $data, $collection)
     {
         if (!$this->getCentrifugoClient()) {
             return;
         }
 
-        $this->getCentrifugoClient()->publish($recipient . 'r', $this->formatRecord($data));
+        $this->getCentrifugoClient()->publish($collection . '_' . $recipient . 'r', $this->formatRecord($data));
     }
 
-    public function sendIsRead($id, $recipient)
+    public function sendIsRead(array $ids, $recipient, $collection)
     {
         if (!$this->getCentrifugoClient()) {
             return;
         }
 
-        $this->getCentrifugoClient()->publish($recipient . 'r', $this->formatIsRead($id, $recipient));
+        foreach ($ids as $id) {
+            $this->getCentrifugoClient()->publish($collection . '_' . $recipient . 'r', $this->formatIsRead($id, $recipient));
+        }
     }
 
-    public function generateConnectionToken($recipient)
+    public function generateConnectionToken($collection, $recipient)
     {
-        return $this->getCentrifugoClient()->generateConnectionToken($recipient . 'r');
+        return $this->getCentrifugoClient()->generateConnectionToken($collection . '_' . $recipient . 'r');
     }
 
     private function getCentrifugoClient()

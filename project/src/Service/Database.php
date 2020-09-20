@@ -111,19 +111,20 @@ class Database
         return $result;
     }
 
-    public function setIsRead($collection, $id)
+    public function setIsRead($collection, array $ids)
     {
         $pdo = $this->getPdo();
 
+        $ids = implode(',', $ids);
+
         /** @noinspection SqlDialectInspection */
         /** @noinspection SqlNoDataSourceInspection */
-        $query = "
-            UPDATE \"$collection\" SET is_read = true WHERE id = :id
+        $query = sprintf("
+            UPDATE \"$collection\" SET is_read = true WHERE id IN (%s)
             RETURNING \"recipient\"
-        ";
+        ", $ids);
 
         $stmt = $pdo->prepare($query);
-        $stmt->bindParam('id', $id);
 
         if(!$stmt->execute()){
             return false;

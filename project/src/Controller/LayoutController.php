@@ -34,4 +34,14 @@ class LayoutController extends ViewController
             $this->forward('error', 'badRequest', ["Collection \"$collection\" not found"]);
         }
     }
+
+    protected function hasCentrifugo()
+    {
+        return $this->getContainer()->getParam('centrifugo/host');
+    }
+
+    protected function hasBadges()
+    {
+        return $this->getContainer()->getParam('badges/host');
+    }
 }

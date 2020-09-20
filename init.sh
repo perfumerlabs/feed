@@ -23,6 +23,8 @@ CENTRIFUGO_SECRET_KEY_SED=${CENTRIFUGO_SECRET_KEY//\//\\\/}
 CENTRIFUGO_SECRET_KEY_SED=${CENTRIFUGO_SECRET_KEY_SED//\./\\\.}
 CENTRIFUGO_MODULE_SED=${CENTRIFUGO_MODULE//\//\\\/}
 CENTRIFUGO_MODULE_SED=${CENTRIFUGO_MODULE_SED//\./\\\.}
+BADGES_HOST_SED=${BADGES_HOST//\//\\\/}
+BADGES_HOST_SED=${BADGES_HOST_SED//\./\\\.}
 
 sed -i "s/FEED_HOST/$FEED_HOST_SED/g" /etc/nginx/sites/feed.conf
 
@@ -51,6 +53,7 @@ sed -i "s/CENTRIFUGO_HOST/$CENTRIFUGO_HOST_SED/g" /opt/feed/src/Resource/config/
 sed -i "s/CENTRIFUGO_API_KEY/$CENTRIFUGO_API_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/CENTRIFUGO_SECRET_KEY/$CENTRIFUGO_SECRET_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/CENTRIFUGO_MODULE/$CENTRIFUGO_MODULE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/BADGES_HOST/$BADGES_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/propel/connection/propel.php
