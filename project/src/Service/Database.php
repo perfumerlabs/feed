@@ -75,7 +75,6 @@ class Database
 
         $where = substr($where, 3, strlen($where));
 
-        /** @noinspection SqlNoDataSourceInspection */
         $query = "
                 SELECT * FROM $collection
                 WHERE $where
@@ -117,8 +116,6 @@ class Database
 
         $ids = implode(',', $ids);
 
-        /** @noinspection SqlDialectInspection */
-        /** @noinspection SqlNoDataSourceInspection */
         $query = sprintf("
             UPDATE \"$collection\" SET is_read = true WHERE id IN (%s)
             RETURNING \"recipient\"
@@ -130,7 +127,9 @@ class Database
             return false;
         }
 
-        return $stmt->fetchColumn();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return array_unique(array_column($result, 'recipient'));
     }
 
     public function createTable(string $name): bool
@@ -142,7 +141,6 @@ class Database
         }
 
         /** @noinspection SqlDialectInspection */
-        /** @noinspection SqlNoDataSourceInspection */
 
         $query = sprintf('CREATE TABLE IF NOT EXISTS "public"."%s"
                 (
@@ -164,9 +162,16 @@ class Database
             return false;
         }
 
+        /** @noinspection SqlDialectInspection */
         $pdo->query(sprintf('CREATE INDEX "%s_recipient_i" ON "%s" ("recipient");', $name, $name));
+
+        /** @noinspection SqlDialectInspection */
         $pdo->query(sprintf('CREATE INDEX "%s_sender_i" ON "%s" ("sender");', $name, $name));
+
+        /** @noinspection SqlDialectInspection */
         $pdo->query(sprintf('CREATE INDEX "%s_thread_i" ON "%s" ("thread");', $name, $name));
+
+        /** @noinspection SqlDialectInspection */
         $pdo->query(sprintf('CREATE INDEX "%s_created_at_i" ON "%s" ("created_at");', $name, $name));
 
         return true;
@@ -183,7 +188,6 @@ class Database
         $pdo = $this->getPdo();
 
         /** @noinspection SqlDialectInspection */
-        /** @noinspection SqlNoDataSourceInspection */
         $query = "
             INSERT INTO \"$collection\" (\"recipient\", \"sender\", \"thread\", \"title\", \"text\", \"image\", \"created_at\")
             VALUES (:recipient, :sender, :thread, :title, :text, :image, :created_at) 

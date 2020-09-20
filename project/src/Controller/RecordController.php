@@ -55,7 +55,7 @@ class RecordController extends LayoutController
 
             $con->commit();
         } catch (\Throwable $e) {
-            var_dump($e->getMessage());
+            $this->setStatus(false);
             $con->rollBack();
         }
     }

@@ -32,20 +32,23 @@ class ReadController extends LayoutController
         $con->beginTransaction();
 
         try {
-            $recipient = $database->setIsRead($collection, $ids);
+            $recipients = $database->setIsRead($collection, $ids);
 
-            if($recipient) {
-                if ($this->hasCentrifugo()) {
-                    $centrifugo->sendIsRead($ids, $recipient, $collection);
-                }
+            if ($recipients) {
+                foreach ($recipients as $recipient){
+                    if ($this->hasCentrifugo()) {
+                        $centrifugo->sendIsRead($ids, $recipient, $collection);
+                    }
 
-                if ($this->hasBadges()) {
-                    $badges->deleteRecords($collection, $recipient, $ids);
+                    if ($this->hasBadges()) {
+                        $badges->deleteRecords($collection, $recipient, $ids);
+                    }
                 }
             }
 
             $con->commit();
         } catch (\Throwable $e) {
+            $this->setStatus(false);
             $con->rollBack();
         }
     }

@@ -29,4 +29,12 @@ return [
             '@centrifugo/module',
         ]
     ],
+
+    'badges' => [
+        'shared' => true,
+        'class' => 'Feed\\Service\\Badges',
+        'arguments' => [
+            '@badges/host',
+        ]
+    ],
 ];

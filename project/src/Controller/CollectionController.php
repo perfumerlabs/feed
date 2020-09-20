@@ -33,8 +33,8 @@ class CollectionController extends LayoutController
 
             $con->commit();
         } catch (\Throwable $e) {
+            $this->setStatus(false);
             $con->rollBack();
-            var_dump($e->getMessage());exit();
         }
     }
 }
