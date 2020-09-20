@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Feed\Controller\Record;
+namespace Feed\Controller;
 
-use Feed\Controller\LayoutController;
+use Feed\Service\Centrifugo;
 use Feed\Service\Database;
 
 class ReadController extends LayoutController
@@ -19,11 +19,18 @@ class ReadController extends LayoutController
         /** @var Database $database */
         $database = $this->s('database');
 
+        /** @var Centrifugo $centrifugo */
+        $centrifugo = $this->s('centrifugo');
+
         $con = $database->getPdo();
         $con->beginTransaction();
 
         try {
-            $database->setIsRead($collection, $id);
+            $recipient = $database->setIsRead($collection, $id);
+
+            if($recipient && $this->getContainer()->getParam('centrifugo/endpoint')){
+                $centrifugo->sendIsRead($id, $recipient);
+            }
 
             $con->commit();
         } catch (\Throwable $e) {

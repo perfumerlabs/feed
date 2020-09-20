@@ -21,4 +21,11 @@ return [
         'username' => 'PG_USER',
         'password' => 'PG_PASSWORD',
     ],
+
+    'centrifugo' => [
+        'host' => 'CENTRIFUGO_HOST',
+        'api_key' => 'CENTRIFUGO_API_KEY',
+        'secret_key' => 'CENTRIFUGO_SECRET_KEY',
+        'module'    => 'CENTRIFUGO_MODULE'
+    ]
 ];

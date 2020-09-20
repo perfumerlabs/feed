@@ -15,6 +15,14 @@ PG_HOST_SED=${PG_HOST//\//\\\/}
 PG_HOST_SED=${PG_HOST_SED//\./\\\.}
 PG_PASSWORD_SED=${PG_PASSWORD//\//\\\/}
 PG_PASSWORD_SED=${PG_PASSWORD_SED//\./\\\.}
+CENTRIFUGO_HOST_SED=${CENTRIFUGO_HOST//\//\\\/}
+CENTRIFUGO_HOST_SED=${CENTRIFUGO_HOST_SED//\./\\\.}
+CENTRIFUGO_API_KEY_SED=${CENTRIFUGO_API_KEY//\//\\\/}
+CENTRIFUGO_API_KEY_SED=${CENTRIFUGO_API_KEY_SED//\./\\\.}
+CENTRIFUGO_SECRET_KEY_SED=${CENTRIFUGO_SECRET_KEY//\//\\\/}
+CENTRIFUGO_SECRET_KEY_SED=${CENTRIFUGO_SECRET_KEY_SED//\./\\\.}
+CENTRIFUGO_MODULE_SED=${CENTRIFUGO_MODULE//\//\\\/}
+CENTRIFUGO_MODULE_SED=${CENTRIFUGO_MODULE_SED//\./\\\.}
 
 sed -i "s/FEED_HOST/$FEED_HOST_SED/g" /etc/nginx/sites/feed.conf
 
@@ -39,6 +47,10 @@ sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/CENTRIFUGO_HOST/$CENTRIFUGO_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/CENTRIFUGO_API_KEY/$CENTRIFUGO_API_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/CENTRIFUGO_SECRET_KEY/$CENTRIFUGO_SECRET_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/CENTRIFUGO_MODULE/$CENTRIFUGO_MODULE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/propel/connection/propel.php

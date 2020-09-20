@@ -17,5 +17,15 @@ return [
             '@database/username',
             '@database/password',
         ]
-    ]
+    ],
+
+    'centrifugo' => [
+        'shared' => true,
+        'class' => 'Feed\\Service\\Centrifugo',
+        'arguments' => [
+            '@centrifugo/endpoint',
+            '@centrifugo/api_key',
+            '@centrifugo/secret_key',
+        ]
+    ],
 ];

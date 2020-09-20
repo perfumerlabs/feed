@@ -4,7 +4,9 @@ namespace Feed\Service;
 
 use Envms\FluentPDO\Query;
 use Feed\Model\FeedCollectionQuery;
+use Feed\Model\Map\FeedCollectionTableMap;
 use Perfumer\Helper\Text;
+use Propel\Runtime\Propel;
 
 class Database
 {
@@ -37,8 +39,9 @@ class Database
 
     public function getPdo()
     {
+
         if (!$this->pdo) {
-            $this->pdo = new \PDO("pgsql:host={$this->host};port={$this->port};dbname={$this->db}", $this->username, $this->password);
+            $this->pdo = Propel::getWriteConnection(FeedCollectionTableMap::DATABASE_NAME);
         }
 
         return $this->pdo;
@@ -58,26 +61,26 @@ class Database
         $where = '';
 
         if($recipient){
-            $where .= "AND recipient = :recipient";
+            $where .= "AND recipient = :recipient ";
         }
         if($sender){
-            $where .= "AND sender = :sender";
+            $where .= "AND sender = :sender ";
         }
         if($id){
-            $where .= "AND id > :id";
+            $where .= "AND id > :id ";
         }
         if($thread){
-            $where .= "AND thread = :thread";
+            $where .= "AND thread = :thread ";
         }
 
         $where = substr($where, 3, strlen($where));
 
         /** @noinspection SqlNoDataSourceInspection */
         $query = "
-                SELECT * FROM \"$collection\"
-                WHERE \"$where\"
-                LIMIT \"$limit\"
+                SELECT * FROM $collection
+                WHERE $where
                 ORDER BY id DESC
+                LIMIT $limit
             ";
 
         $stmt = $pdo->prepare($query);
@@ -116,11 +119,17 @@ class Database
         /** @noinspection SqlNoDataSourceInspection */
         $query = "
             UPDATE \"$collection\" SET is_read = true WHERE id = :id
+            RETURNING \"recipient\"
         ";
 
         $stmt = $pdo->prepare($query);
         $stmt->bindParam('id', $id);
-        $stmt->execute();
+
+        if(!$stmt->execute()){
+            return false;
+        }
+
+        return $stmt->fetchColumn();
     }
 
     public function createTable(string $name): bool
@@ -147,20 +156,19 @@ class Database
                     "created_at" TIMESTAMP,
                     "is_read" BOOLEAN DEFAULT \'f\' NOT NULL,
                     PRIMARY KEY ("id")
-                );
-                
-                CREATE INDEX "%s_i" ON "%s" ("recipient");
-                
-                CREATE INDEX "%s_i" ON "%s" ("sender");
-                
-                CREATE INDEX "%s_i" ON "%s" ("thread");
-                
-                CREATE INDEX "%s_i" ON "%s" ("created_at");',
-            $name, $name, $name, $name, $name, $name, $name, $name, $name);
+                );', $name);
 
         $stmt = $pdo->prepare($query);
+        if(!$stmt->execute()){
+            return false;
+        }
 
-        return $stmt->execute();
+        $pdo->query(sprintf('CREATE INDEX "%s_recipient_i" ON "%s" ("recipient");', $name, $name));
+        $pdo->query(sprintf('CREATE INDEX "%s_sender_i" ON "%s" ("sender");', $name, $name));
+        $pdo->query(sprintf('CREATE INDEX "%s_thread_i" ON "%s" ("thread");', $name, $name));
+        $pdo->query(sprintf('CREATE INDEX "%s_created_at_i" ON "%s" ("created_at");', $name, $name));
+
+        return true;
     }
 
     public function hasCollection(string $collection)
@@ -198,6 +206,6 @@ class Database
         $stmt->bindParam('created_at', $created_at);
         $stmt->execute();
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetchColumn();
     }
 }

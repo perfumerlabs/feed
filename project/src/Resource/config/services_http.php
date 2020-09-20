@@ -5,6 +5,10 @@ return [
         'shared' => true,
         'init' => function(\Perfumer\Component\Container\Container $container) {
             return \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
+                $r->addRoute('POST', '/collection', 'collection.post');
+                $r->addRoute('POST', '/record', 'record.post');
+                $r->addRoute('POST', '/record/read', 'read.post');
+                $r->addRoute('GET', '/records', 'records.get');
             });
         }
     ],
@@ -24,5 +28,5 @@ return [
             'prefix' => 'Feed\\Controller',
             'suffix' => 'Controller'
         ]]
-    ]
+    ],
 ];
