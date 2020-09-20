@@ -42,7 +42,7 @@ class RecordController extends LayoutController
                 $data['id'] = $id;
                 $data['recipient'] = $recipient;
 
-                if ($this->getContainer()->getParam('centrifugo/endpoint')) {
+                if ($this->getContainer()->getParam('centrifugo/host')) {
                     $centrifugo->sendRecord($recipient, $data);
                 }
 

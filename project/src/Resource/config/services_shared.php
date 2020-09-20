@@ -23,9 +23,10 @@ return [
         'shared' => true,
         'class' => 'Feed\\Service\\Centrifugo',
         'arguments' => [
-            '@centrifugo/endpoint',
+            '@centrifugo/host',
             '@centrifugo/api_key',
             '@centrifugo/secret_key',
+            '@centrifugo/module',
         ]
     ],
 ];

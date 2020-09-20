@@ -28,7 +28,7 @@ class ReadController extends LayoutController
         try {
             $recipient = $database->setIsRead($collection, $id);
 
-            if($recipient && $this->getContainer()->getParam('centrifugo/endpoint')){
+            if($recipient && $this->getContainer()->getParam('centrifugo/host')){
                 $centrifugo->sendIsRead($id, $recipient);
             }
 
