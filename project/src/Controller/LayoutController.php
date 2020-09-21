@@ -37,11 +37,13 @@ class LayoutController extends ViewController
 
     protected function hasCentrifugo()
     {
-        return $this->getContainer()->getParam('centrifugo/host');
+        $host = $this->getContainer()->getParam('centrifugo/host');
+        return $host && $host !== 'CENTRIFUGO_HOST';
     }
 
     protected function hasBadges()
     {
-        return $this->getContainer()->getParam('badges/host');
+        $host = $this->getContainer()->getParam('badges/host');
+        return $host && $host !== 'BADGES_HOST';
     }
 }
