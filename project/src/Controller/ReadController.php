@@ -37,7 +37,7 @@ class ReadController extends LayoutController
             if ($recipients) {
                 foreach ($recipients as $recipient){
                     if ($this->hasCentrifugo()) {
-                        $centrifugo->sendIsRead($ids, $recipient, $collection);
+                        $centrifugo->sendIsRead($ids, $recipient);
                     }
 
                     if ($this->hasBadges()) {
