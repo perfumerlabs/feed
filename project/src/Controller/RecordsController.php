@@ -11,13 +11,12 @@ class RecordsController extends LayoutController
     public function get()
     {
         $collection = $this->f('collection');
-        $recipient = $this->f('recipient');
 
         $this->validateCollection($collection);
-        $this->validateNotEmpty($recipient, 'recipient');
 
         $sender = $this->f('sender');
         $thread = $this->f('thread');
+        $recipient = $this->f('recipient');
         $id = $this->f('id');
         $limit = $this->f('limit');
 
