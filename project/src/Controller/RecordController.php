@@ -3,6 +3,7 @@
 
 namespace Feed\Controller;
 
+use Feed\Service\Badges;
 use Feed\Service\Centrifugo;
 use Feed\Service\Database;
 use Perfumer\Helper\Arr;
@@ -13,6 +14,8 @@ class RecordController extends LayoutController
     {
         $collection = $this->f('collection');
         $recipient = $this->f('recipient');
+        $badge_collection = $this->f('badge_collection');
+        $badge_user = $this->f('badge_user');
 
         $this->validateCollection($collection);
         $this->validateNotEmpty($recipient, 'recipient');
@@ -32,6 +35,9 @@ class RecordController extends LayoutController
         /** @var Centrifugo $centrifugo */
         $centrifugo = $this->s('centrifugo');
 
+        /** @var Badges $badges */
+        $badges = $this->s('badges');
+
         $con = $database->getPdo();
         $con->beginTransaction();
 
@@ -42,8 +48,12 @@ class RecordController extends LayoutController
                 $data['id'] = $id;
                 $data['recipient'] = $recipient;
 
-                if ($this->getContainer()->getParam('centrifugo/host')) {
+                if ($this->hasCentrifugo()) {
                     $centrifugo->sendRecord($recipient, $data);
+                }
+
+                if($this->hasBadges() && $badge_collection){
+                    $badges->addRecord($badge_collection, ($badge_user ?: $recipient), $id);
                 }
 
                 $this->setContent([

@@ -20,7 +20,7 @@
 <!--        <column name="title" type="varchar" size="255"/>-->
 <!--        <column name="text" type="longvarchar"/>-->
 <!--        <column name="image" type="varchar" size="255"/>-->
-<!--        <column name="payload" type="json"/>-->
+<!--        <column name="payload" type="jsonb"/>-->
 <!--        <column name="created_at" type="timestamp"/>-->
 <!--        <column name="is_read" type="boolean" required="true" defaultValue="false"/>-->
 <!--        <index>-->

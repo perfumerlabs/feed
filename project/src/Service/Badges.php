@@ -13,12 +13,12 @@ class Badges
         $this->host = $host;
     }
 
-    public function addRecord($collection, $recipient, $id)
+    public function addRecord($collection, $user, $id)
     {
         $data = [
             'collection' => $collection,
-            'name' => 'records/' . $recipient,
-            'user' => $recipient,
+            'name' => $collection . '/' . 'record/' . $id,
+            'user' => $user,
             'payload' => [
                 'id' => $id
             ]
@@ -47,14 +47,14 @@ class Badges
         }
     }
 
-    public function deleteRecords($collection, $recipient, array $ids)
+    public function deleteRecords($collection, $user, array $ids)
     {
         foreach ($ids as $id) {
 
             $data = [
                 'collection' => $collection,
-                'name' => 'records/' . $recipient . '/' . $id,
-                'user' => $recipient
+                'name' => $collection . '/' . 'record/' . $id,
+                'user' => $user
             ];
 
             try {

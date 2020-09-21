@@ -13,6 +13,8 @@ class ReadController extends LayoutController
     {
         $collection = $this->f('collection');
         $id = $this->f('id');
+        $badge_collection = $this->f('badge_collection');
+        $badge_user = $this->f('badge_user');
 
         $this->validateCollection($collection);
         $this->validateNotEmpty($id, 'id');
@@ -40,8 +42,8 @@ class ReadController extends LayoutController
                         $centrifugo->sendIsRead($ids, $recipient);
                     }
 
-                    if ($this->hasBadges()) {
-                        $badges->deleteRecords($collection, $recipient, $ids);
+                    if ($this->hasBadges() && $badge_collection) {
+                        $badges->deleteRecords($badge_collection, ($badge_user ?: $recipient), $ids);
                     }
                 }
             }

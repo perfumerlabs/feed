@@ -54,6 +54,7 @@ class Centrifugo
                         'title' => $data['title'] ?? null,
                         'text' => $data['text'] ?? null,
                         'image' => $data['image'] ?? null,
+                        'payload' => $data['payload'] ?? [],
                         'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
                     ]
                 ]

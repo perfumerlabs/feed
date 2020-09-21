@@ -56,6 +56,8 @@ class Database
     {
         $pdo = $this->getPdo();
 
+        $collection = 'feed_data_' . $collection;
+
         $limit = $limit && $limit > 0 ?: 25;
 
         $where = '';
@@ -116,6 +118,8 @@ class Database
 
         $ids = implode(',', $ids);
 
+        $collection = 'feed_data_' . $collection;
+
         $query = sprintf("
             UPDATE \"$collection\" SET is_read = true WHERE id IN (%s)
             RETURNING \"recipient\"
@@ -140,6 +144,8 @@ class Database
             return false;
         }
 
+        $name = 'feed_data_' . $name;
+
         /** @noinspection SqlDialectInspection */
 
         $query = sprintf('CREATE TABLE IF NOT EXISTS "public"."%s"
@@ -151,7 +157,7 @@ class Database
                     "title" VARCHAR(255),
                     "text" TEXT,
                     "image" VARCHAR(255),
-                    "payload" JSON,
+                    "payload" JSONB,
                     "created_at" TIMESTAMP,
                     "is_read" BOOLEAN DEFAULT \'f\' NOT NULL,
                     PRIMARY KEY ("id")
@@ -186,6 +192,8 @@ class Database
     public function insert($collection, $recipient, array $data)
     {
         $pdo = $this->getPdo();
+
+        $collection = 'feed_data_' . $collection;
 
         /** @noinspection SqlDialectInspection */
         $query = "
