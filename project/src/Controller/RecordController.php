@@ -69,4 +69,20 @@ class RecordController extends LayoutController
             $con->rollBack();
         }
     }
+    
+    public function get()
+    {
+        $collection = $this->f('collection');
+        $id = $this->f('id');
+
+        $this->validateCollection($collection);
+        $this->validateNotEmpty($id, 'id');
+
+        /** @var Database $database */
+        $database = $this->s('database');
+
+        $record = $database->getRecord($collection, $id);
+
+        $this->setContent(['record' => $record]);
+    }
 }
