@@ -52,11 +52,16 @@ class Database
         return new Query($this->pdo);
     }
 
+    public function getCollectionName($collection)
+    {
+        return 'feed_data_' . $collection;
+    }
+
     public function getRecords($collection, $recipient, $sender, $thread, $id, $limit): array
     {
         $pdo = $this->getPdo();
 
-        $collection = 'feed_data_' . $collection;
+        $collection = $this->getCollectionName($collection);
 
         $limit = $limit && $limit > 0 ?: 25;
 
@@ -118,7 +123,7 @@ class Database
 
         $ids = implode(',', $ids);
 
-        $collection = 'feed_data_' . $collection;
+        $collection = $this->getCollectionName($collection);
 
         $query = sprintf("
             UPDATE \"$collection\" SET is_read = true WHERE id IN (%s)
@@ -144,7 +149,7 @@ class Database
             return false;
         }
 
-        $name = 'feed_data_' . $name;
+        $name = $this->getCollectionName($name);
 
         /** @noinspection SqlDialectInspection */
 
@@ -193,7 +198,7 @@ class Database
     {
         $pdo = $this->getPdo();
 
-        $collection = 'feed_data_' . $collection;
+        $collection = $this->getCollectionName($collection);
 
         /** @noinspection SqlDialectInspection */
         $query = "
@@ -220,5 +225,23 @@ class Database
         $stmt->execute();
 
         return $stmt->fetchColumn();
+    }
+
+    public function getRecord($collection, $id)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $query = "
+                SELECT * FROM $collection
+                WHERE id = :id
+            ";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('id', $id);
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }
