@@ -9,6 +9,7 @@ return [
                 $r->addRoute('POST', '/record', 'record.post');
                 $r->addRoute('POST', '/record/read', 'read.post');
                 $r->addRoute('GET', '/records', 'records.get');
+                $r->addRoute('GET', '/record', 'record.get');
             });
         }
     ],
