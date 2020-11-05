@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="feed" defaultIdMethod="native" namespace="Feed\Model">
+    <!-- Meta information about collections -->
+    <table name="feed_collection" phpName="FeedCollection">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/> <!-- Name of collection -->
+        <column name="websocket_module" type="varchar" size="255"/> <!-- module for websocket push -->
+        <column name="badges_collection" type="varchar" size="255"/> <!-- collection of Badges to push badge to -->
+        <column name="badges_prefix" type="varchar" size="255"/> <!-- prefix of badge name -->
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+        <behavior name="timestampable">
+            <parameter name="disable_updated_at" value="true" />
+        </behavior>
+    </table>
+
+<!--    <table name="sample" phpName="Sample">-->
+<!--        <column name="id" type="bigint" required="true" primaryKey="true" autoIncrement="true"/>-->
+<!--        <column name="recipient" type="varchar" size="255" required="true"/>-->
+<!--        <column name="sender" type="varchar" size="255"/>-->
+<!--        <column name="thread" type="varchar" size="255"/>-->
+<!--        <column name="title" type="varchar" size="255"/>-->
+<!--        <column name="text" type="longvarchar"/>-->
+<!--        <column name="image" type="varchar" size="255"/>-->
+<!--        <column name="payload" type="jsonb"/>-->
+<!--        <column name="created_at" type="timestamp"/>-->
+<!--        <column name="is_read" type="boolean" required="true" defaultValue="false"/>-->
+<!--        <index>-->
+<!--            <index-column name="recipient"/>-->
+<!--        </index>-->
+<!--        <index>-->
+<!--            <index-column name="sender"/>-->
+<!--        </index>-->
+<!--        <index>-->
+<!--            <index-column name="thread"/>-->
+<!--        </index>-->
+<!--        <index>-->
+<!--            <index-column name="created_at"/>-->
+<!--        </index>-->
+<!--        <behavior name="timestampable">-->
+<!--            <parameter name="disable_updated_at" value="true" />-->
+<!--        </behavior>-->
+<!--    </table>-->
+</database>
