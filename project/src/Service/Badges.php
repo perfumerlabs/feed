@@ -41,9 +41,7 @@ class Badges
                 'connect_timeout' => 5,
                 'read_timeout'    => 5,
                 'timeout'         => 5,
-                'json' => [
-                    $data
-                ],
+                'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
@@ -79,9 +77,7 @@ class Badges
                 'connect_timeout' => 5,
                 'read_timeout'    => 5,
                 'timeout'         => 5,
-                'json' => [
-                    $data
-                ],
+                'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
@@ -117,9 +113,7 @@ class Badges
                 'connect_timeout' => 5,
                 'read_timeout'    => 5,
                 'timeout'         => 5,
-                'json' => [
-                    $data
-                ],
+                'json' => $data,
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ],
