@@ -67,6 +67,7 @@ class Database
         $limit = $data['limit'] ?? null;
         $search = $data['search'] ?? null;
         $order = $data['order'] ?? null;
+        $is_read = $data['is_read'] ?? null;
 
         $pdo = $this->getPdo();
 
@@ -89,7 +90,11 @@ class Database
         }
 
         if ($id) {
-            $where .= "AND id < :id ";
+            if ($order === 'desc') {
+                $where .= "AND id < :id ";
+            } else {
+                $where .= "AND id > :id ";
+            }
         }
 
         if ($thread) {
@@ -98,6 +103,14 @@ class Database
 
         if ($search) {
             $where .= "AND (title ILIKE :title OR text ILIKE :text) ";
+        }
+
+        if ($is_read !== null) {
+            if ($is_read === true) {
+                $where .= "AND is_read = true ";
+            } else {
+                $where .= "AND is_read = false ";
+            }
         }
 
         if ($where) {

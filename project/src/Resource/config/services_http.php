@@ -6,17 +6,7 @@ return [
         'init' => function(\Perfumer\Component\Container\Container $container) {
             return \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
                 $r->addRoute('POST', '/collection', 'collection.post');
-                $r->addRoute('PATCH', '/collection/{name}', 'collection.patch');
-
-                $r->addRoute('GET',    '/collection/{collection}/record/{id}', 'record.get');
-                $r->addRoute('POST',   '/collection/{collection}/record', 'record.post');
-                $r->addRoute('DELETE', '/collection/{collection}/record/{id}', 'record.delete');
-                $r->addRoute('POST',   '/collection/{collection}/record/{id}/read', 'record/read.post');
-                $r->addRoute('POST',   '/collection/{collection}/record/{id}/unread', 'record/unread.post');
-
-                $r->addRoute('GET',    '/collection/{collection}/records', 'records.get');
-                $r->addRoute('POST',   '/collection/{collection}/records/read', 'records/read.post');
-                $r->addRoute('DELETE', '/collection/{collection}/records', 'records.delete');
+                $r->addRoute('PATCH', '/collection', 'collection.patch');
 
                 $r->addRoute('GET',    '/record', 'record.get');
                 $r->addRoute('POST',   '/record', 'record.post');

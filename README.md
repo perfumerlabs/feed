@@ -14,7 +14,7 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.0.0
+-d perfumerlabs/feed:v1.1.0
 ```
 
 Database must be created before container startup.
@@ -98,12 +98,10 @@ Response example:
 
 ### Update collection
 
-`PATCH /collection/{name}`
-
-Parameters (url):
-- name [string,required] - name of the collection.
+`PATCH /collection`
 
 Parameters (json):
+- name [string,required] - name of the collection.
 - websocket_module [string,optional] - module of websocket pushes.
 - badges_collection [string,optional] - collection of Badges to push badges to.
 - badges_prefix [string,optional] - prefix of badges names.
@@ -127,10 +125,6 @@ Response example:
 ### Create a record
 
 `POST /record`
-
-or
-
-`POST /collection/{collection}/record`
 
 Request parameters (json):
 - collection [string,required] - name of the collection.
@@ -234,10 +228,6 @@ If "badges_collection" is set for collection, then badge will be saved:
 
 `GET /record`
 
-or
-
-`GET /collection/{collection}/record/{id}`
-
 Request parameters (json):
 - collection [string,required] - name of the collection.
 - id [integer,required] - the id of document.
@@ -291,10 +281,6 @@ Response example:
 
 `DELETE /record`
 
-or
-
-`DELETE /collection/{collection}/record/{id}`
-
 Request parameters (json or URL):
 - collection [string,required] - name of the collection.
 - id [integer,required] - the id of document.
@@ -330,10 +316,6 @@ If "badges_collection" is set for collection, then badge will be removed:
 
 `GET /records`
 
-or
-
-`GET /collection/{collection}/records`
-
 Request parameters (json):
 - collection [string,required] - name of the collection.
 - recipient [string,required] - name of the recipient.
@@ -342,6 +324,7 @@ Request parameters (json):
 - search [string,optional] - searching string in "title" or "text".
 - id [integer,optional] - the id of document to start from.
 - order [string,optional] - type of ordering ("asc" or "desc"). Default is "desc".
+- is_read [boolean,optional] - if true return only read records, if false - only unread, if null - both. Default is "null".
 
 Request example:
 
@@ -394,10 +377,6 @@ Response example:
 
 `POST /record/read`
 
-or
-
-`POST /collection/{collection}/record/{id}/read`
-
 Request parameters (json):
 - id [integer,required] - id of the record.
 - collection [string,required] - name of the collection.
@@ -433,10 +412,6 @@ If "badges_collection" is set for collection, then badge will be removed:
 ### Unread a record
 
 `POST /record/unread`
-
-or
-
-`POST /collection/{collection}/record/{id}/unread`
 
 Request parameters (json):
 - id [integer,required] - id of the record.
@@ -474,10 +449,6 @@ If "badges_collection" is set for collection, then badge will be saved:
 
 `POST /records/read`
 
-or
-
-`POST /collection/{collection}/records/read`
-
 Request parameters (json):
 - recipient [string,required] - name of recipient.
 - collection [string,required] - name of the collection.
@@ -513,10 +484,6 @@ If "badges_collection" is set for collection, then badges will be removed:
 ### Delete all records of recipient
 
 `DELETE /records`
-
-or
-
-`DELETE /collection/{collection}/records`
 
 Request parameters (json):
 - recipient [string,required] - name of recipient.
