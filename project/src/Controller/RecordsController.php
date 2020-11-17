@@ -22,6 +22,7 @@ class RecordsController extends LayoutController
         $id = $this->f('id');
         $limit = $this->f('limit');
         $order = $this->f('order', 'desc');
+        $is_read = $this->f('is_read');
 
         /** @var Database $database */
         $database = $this->s('database');
@@ -34,7 +35,8 @@ class RecordsController extends LayoutController
             'search' => $search,
             'id' => $id,
             'limit' => $limit,
-            'order' => $order
+            'order' => $order,
+            'is_read' => $is_read,
         ]);
 
         /** @var RecordRepository $repository */
