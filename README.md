@@ -14,7 +14,7 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.1.0
+-d perfumerlabs/feed:v1.1.1
 ```
 
 Database must be created before container startup.
