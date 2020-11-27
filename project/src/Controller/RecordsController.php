@@ -16,6 +16,7 @@ class RecordsController extends LayoutController
         $this->validateCollection($collection);
 
         $sender = $this->f('sender');
+        $user = $this->f('user');
         $thread = $this->f('thread');
         $recipient = $this->f('recipient');
         $search = $this->f('search');
@@ -32,6 +33,7 @@ class RecordsController extends LayoutController
             'recipient' => $recipient,
             'sender' => $sender,
             'thread' => $thread,
+            'user'   => $user,
             'search' => $search,
             'id' => $id,
             'limit' => $limit,
@@ -72,5 +74,20 @@ class RecordsController extends LayoutController
                 $badges->deleteAll($collection, $badge_user);
             });
         }
+    }
+
+    public function patch()
+    {
+        $collection = $this->f('collection');
+        $where = $this->f('where');
+        $set = $this->f('set');
+
+        $this->validateCollection($collection);
+        $this->validateNotEmpty($where, 'where');
+        $this->validateNotEmpty($set, 'set');
+
+        /** @var Database $database */
+        $database = $this->s('database');
+        $database->update($collection, $where, $set);
     }
 }

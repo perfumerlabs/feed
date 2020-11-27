@@ -5,6 +5,7 @@ namespace Feed\Service;
 use Envms\FluentPDO\Query;
 use Feed\Model\FeedCollectionQuery;
 use Feed\Model\Map\FeedCollectionTableMap;
+use Perfumer\Helper\Arr;
 use Perfumer\Helper\Text;
 use Propel\Runtime\Propel;
 
@@ -68,6 +69,7 @@ class Database
         $search = $data['search'] ?? null;
         $order = $data['order'] ?? null;
         $is_read = $data['is_read'] ?? null;
+        $user = $data['user'] ?? null;
 
         $pdo = $this->getPdo();
 
@@ -81,12 +83,16 @@ class Database
 
         $where = '';
 
-        if ($recipient) {
-            $where .= "AND recipient = :recipient ";
-        }
+        if($user){
+            $where .= "AND (recipient = :recipient OR sender = :sender) ";
+        }else {
+            if ($recipient) {
+                $where .= "AND recipient = :recipient ";
+            }
 
-        if ($sender) {
-            $where .= "AND sender = :sender ";
+            if ($sender) {
+                $where .= "AND sender = :sender ";
+            }
         }
 
         if ($id) {
@@ -98,7 +104,9 @@ class Database
         }
 
         if ($thread) {
-            $where .= "AND thread = :thread ";
+            $thread = "'" . implode("','", is_array($thread) ? $thread : [$thread]) . "'";
+
+            $where .= "AND thread IN ($thread) ";
         }
 
         if ($search) {
@@ -106,7 +114,7 @@ class Database
         }
 
         if ($is_read !== null) {
-            if ($is_read === true) {
+            if ($is_read) {
                 $where .= "AND is_read = true ";
             } else {
                 $where .= "AND is_read = false ";
@@ -114,32 +122,33 @@ class Database
         }
 
         if ($where) {
-            $where = substr($where, 3, strlen($where));
+            $where = 'WHERE ' . substr($where, 3, strlen($where));
         }
 
         $query = "
                 SELECT * FROM $collection
-                WHERE $where
+                $where
                 ORDER BY created_at $order
                 LIMIT $limit
             ";
 
         $stmt = $pdo->prepare($query);
 
+        if($user){
+            $stmt->bindParam('sender', $user, \PDO::PARAM_STR);
+            $stmt->bindParam('recipient', $user, \PDO::PARAM_STR);
+        }
+
         if ($recipient){
-            $stmt->bindParam('recipient', $recipient);
+            $stmt->bindParam('recipient', $recipient, \PDO::PARAM_STR);
         }
 
         if ($sender){
-            $stmt->bindParam('sender', $sender);
+            $stmt->bindParam('sender', $sender, \PDO::PARAM_STR);
         }
 
         if ($id){
-            $stmt->bindParam('id', $id);
-        }
-
-        if ($thread){
-            $stmt->bindParam('thread', $thread);
+            $stmt->bindParam('id', $id, \PDO::PARAM_INT);
         }
 
         if ($search){
@@ -363,5 +372,139 @@ class Database
         $stmt->execute();
 
         return true;
+    }
+
+    public function update(string $collection, array $where, array $set)
+    {
+        $where = Arr::fetch($where, [
+            'recipient',
+            'sender',
+            'thread',
+            'user'
+        ]);
+
+        $set = Arr::fetch($set, [
+            'recipient',
+            'sender',
+            'thread',
+            'user',
+            'title',
+            'text',
+            'image',
+            'payload',
+        ]);
+
+        if(!$where || !$set){
+            return false;
+        }
+
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $set_query = null;
+
+        foreach ($set as $key => $item){
+            if($key === 'user'){
+                continue;
+            }
+            if(!$set_query){
+                $set_query = sprintf('SET "%s" = :new_%s ', $key, $key);
+            }else {
+                $set_query .= sprintf(', "%s" = :new_%s', $key, $key);
+            }
+        }
+
+        $where_query = null;
+
+        foreach ($where as $key => $item){
+            if($key === 'user'){
+                continue;
+            }
+            if(!$where_query){
+                $where_query .=  sprintf('WHERE "%s" = :%s', $key, $key);
+            }else {
+                $where_query .= sprintf('AND "%s" = :%s', $key, $key);
+            }
+        }
+
+        $user_where = $where['user'] ?? null;
+        $user_set = $set['user'] ?? null;
+
+        if($user_where && $user_set){
+            /** @noinspection SqlDialectInspection */
+            $set_query .= ($set_query ? ', ' : ' SET ') . 'recipient = CASE
+                            WHEN recipient = :user_where THEN :user_set
+                            ELSE recipient
+                            END, 
+                            sender = CASE
+                            WHEN sender = :user_where THEN :user_set
+                            ELSE sender
+                            END';
+        }
+
+        if($user_where){
+            $where_query = ($where_query ? 'AND' : 'WHERE') . ' (recipient = :user_where OR sender = :user_where) ';
+        }
+
+        if(!$where_query || !$set_query){
+            return false;
+        }
+
+        /** @noinspection SqlDialectInspection */
+        $query = sprintf("UPDATE \"$collection\" %s %s;", $set_query, $where_query);
+
+        $stmt = $pdo->prepare($query);
+
+        if($user_where && $user_set){
+            $stmt->bindParam('user_set', $user_set, \PDO::PARAM_STR);
+        }
+
+        if($user_where){
+            $stmt->bindParam('user_where', $user_where, \PDO::PARAM_STR);
+        }
+
+        if(isset($where['recipient'])){
+            $stmt->bindParam('recipient', $where['recipient'], \PDO::PARAM_STR);
+        }
+
+        if(isset($where['sender'])){
+            $stmt->bindParam('sender', $where['sender'], \PDO::PARAM_STR);
+        }
+
+        if(isset($where['thread'])){
+            $stmt->bindParam('thread', $where['thread'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['recipient'])){
+            $stmt->bindParam('new_recipient', $set['recipient'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['sender'])){
+            $stmt->bindParam('new_sender', $set['sender'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['thread'])){
+            $stmt->bindParam('new_thread', $set['thread'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['title'])){
+            $stmt->bindParam('new_title', $set['title'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['text'])){
+            $stmt->bindParam('new_text', $set['text'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['image'])){
+            $stmt->bindParam('new_image', $set['image'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['payload'])){
+            $payload = json_encode($set['payload'], true);
+            $stmt->bindParam('new_payload', $payload);
+        }
+
+        return $stmt->execute();
     }
 }

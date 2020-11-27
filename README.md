@@ -14,7 +14,7 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.1.1
+-d perfumerlabs/feed:v1.2.0
 ```
 
 Database must be created before container startup.
@@ -320,6 +320,7 @@ Request parameters (json):
 - collection [string,required] - name of the collection.
 - recipient [string,required] - name of the recipient.
 - sender [string,optional] - name of the sender.
+- user [string,optional] - name of the sender or recipient. If user is present, recipient and sender will be ignored.
 - thread [string,optional] - name of the thread.
 - search [string,optional] - searching string in "title" or "text".
 - id [integer,optional] - the id of document to start from.
@@ -370,6 +371,53 @@ Response example:
             }
         ]
     }
+}
+```
+### Update records
+`PATCH /records`
+
+Request parameters (json):
+- collection [string,required] - name of the collection.
+- where [object,required] - parameter object for WHERE.
+- where.recipient [string,optional] - name of the recipient.
+- where.sender [string,optional] - name of the sender.
+- where.thread [string,optional] - name of the thread.
+- where.user [string,optional] - name of the sender or recipient.
+- set [object,required] - parameter object for SET.
+- set.recipient [string, optional] - name of record recipient.
+- set.sender [string, optional] - name of record author.
+- set.thread [string, optional] - additional field for tagging record.
+- set.user [string, optional] - name of the sender or recipient.
+- set.title [string, optional] - title of record.
+- set.text [string, optional] - text of record.
+- set.image [string, optional] - image of record.
+- set.payload [object, optional] - any JSON-serializable content.
+
+Request example:
+
+```json
+{
+    "collection": "foobar",
+    "where": {
+        "thread": "foo"
+    },
+    "set": {
+        "sender": "bar",
+        "payload": {
+             "foo": "bar"
+        }
+    }
+}
+```
+
+Response parameters (json):
+- status [boolean] - result status.
+
+Response example:
+
+```json
+{
+    "status": true
 }
 ```
 
