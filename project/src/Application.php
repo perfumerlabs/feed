@@ -25,7 +25,7 @@ class Application extends \Perfumer\Framework\Application\Application
 
     protected function before(): void
     {
-        date_default_timezone_set('UTC');
+        date_default_timezone_set('Utc');
 
         define('TMP_DIR', __DIR__ . '/../tmp/');
     }

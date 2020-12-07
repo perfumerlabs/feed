@@ -51,6 +51,7 @@ RUN set -x\
     && chmod +x /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/init.sh
 
+ENV FEED_TIMEZONE "Utc"
 ENV PG_HOST postgresql
 ENV PG_PORT 5432
 ENV PG_DATABASE feed

@@ -22,13 +22,14 @@ return [
         'username' => 'PG_USER',
         'password' => 'PG_PASSWORD',
     ],
-
+    'feed' => [
+        'timezone' => 'FEED_TIMEZONE',
+    ],
     'centrifugo' => [
         'host' => 'CENTRIFUGO_HOST',
         'api_key' => 'CENTRIFUGO_API_KEY',
         'secret_key' => 'CENTRIFUGO_SECRET_KEY',
     ],
-
     'badges' => [
         'host' => 'BADGES_HOST',
     ],

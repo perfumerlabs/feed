@@ -16,6 +16,7 @@ return [
             '@database/port',
             '@database/username',
             '@database/password',
+            '@feed/timezone',
         ]
     ],
 
@@ -40,6 +41,9 @@ return [
     'repository.record' => [
         'shared' => true,
         'class' => 'Feed\\Repository\\RecordRepository',
+        'arguments' => [
+            '@feed/timezone',
+        ]
     ],
 
     'domain.collection' => [

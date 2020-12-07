@@ -21,6 +21,8 @@ class Database
 
     private $password;
 
+    private $timezone;
+
     private $pdo;
 
     public function __construct(
@@ -28,7 +30,8 @@ class Database
         $host,
         $port,
         $username,
-        $password
+        $password,
+        $timezone
     )
     {
         $this->db = $db;
@@ -36,6 +39,7 @@ class Database
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
+        $this->timezone = $timezone;
     }
 
     public function getPdo()
@@ -301,6 +305,10 @@ class Database
 
         if (!$created_at) {
             $created_at = date("Y-m-d H:i:s");
+        } else {
+            $date = new \DateTime($created_at);
+            $date->setTimezone(new \DateTimeZone("Utc"));
+            $created_at = $date->format('Y-m-d H:i:s');
         }
 
         $stmt = $pdo->prepare($query);

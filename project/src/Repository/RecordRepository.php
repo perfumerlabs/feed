@@ -4,8 +4,23 @@ namespace Feed\Repository;
 
 class RecordRepository
 {
+    protected $timezone;
+
+    public function __construct($timezone)
+    {
+        $this->timezone = $timezone;
+    }
+
     public function format($record): ?array
     {
+        $created_at = $record['created_at'] ?? null;
+
+        if ($created_at) {
+            $date = new \DateTime($created_at);
+            $date->setTimezone(new \DateTimeZone($this->timezone));
+            $created_at = $date->format('Y-m-d H:i:s');
+        }
+
         $array = [
             'id' => $record['id'] ?? null,
             'recipient' => $record['recipient'] ?? null,
@@ -15,7 +30,7 @@ class RecordRepository
             'text' => $record['text'] ?? null,
             'image' => $record['image'] ?? null,
             'is_read' => $record['is_read'] ?? false,
-            'created_at' => $record['created_at'] ?? null,
+            'created_at' => $created_at,
             'payload' => $record['payload'] ?? new \stdClass(),
         ];
 
