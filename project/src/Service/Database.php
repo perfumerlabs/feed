@@ -62,6 +62,63 @@ class Database
         return 'feed_data_' . preg_replace('/[^a-zA-Z0-9_]/', '', $collection);
     }
 
+    public function getRecordsCount($collection, $recipient, $where, $group)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $select = $group ? ", $group as name" : '';
+
+        $query = "
+                SELECT COUNT(*) $select FROM $collection
+                WHERE recipient = :recipient
+            ";
+
+        if($where){
+            if ($where['sender'] ?? false) {
+                $query .= "AND sender = :sender ";
+            }
+
+
+            if ($where['thread'] ?? false) {
+                $thread = "'" . implode("','", is_array($where['thread']) ? $where['thread'] : [$where['thread']]) . "'";
+
+                $query .= "AND thread IN ($thread) ";
+            }
+
+
+            if (array_key_exists('is_read', $where) && !is_null($where['is_read'])) {
+                if ($where['is_read']) {
+                    $query .= "AND is_read = true ";
+                } else {
+                    $query .= "AND is_read = false ";
+                }
+            }
+        }
+
+        if($group){
+            $query .= " GROUP BY $group";
+        }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('recipient', $recipient);
+
+        if($where && $where['sender'] ?? false){
+            $stmt->bindParam('sender', $where['sender']);
+        }
+
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if($group){
+            return $result;
+        }else{
+            return $result[0]['count'];
+        }
+    }
+
     public function getRecords(array $data): array
     {
         $collection = $data['collection'] ?? null;
@@ -325,6 +382,54 @@ class Database
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    public function insertMultiple($collection, $recipients, array $data)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $insert = '';
+
+        foreach ($recipients as $recipient){
+            $insert .= "($recipient, :sender, :thread, :title, :text, :image, :created_at, :payload),";
+        }
+
+        /** @noinspection SqlDialectInspection */
+        $query = "
+            INSERT INTO \"$collection\" (\"recipient\", \"sender\", \"thread\", \"title\", \"text\", \"image\", \"created_at\", \"payload\")
+            VALUES $insert
+            RETURNING \"id\"
+        ";
+
+        $created_at = $data['created_at'] ?? null;
+        $sender = $data['sender'] ?? null;
+        $thread = $data['thread'] ?? null;
+        $title = $data['title'] ?? null;
+        $text = $data['text'] ?? null;
+        $image = $data['image'] ?? null;
+        $payload = array_key_exists('payload', $data) ? json_encode($data['payload']) : null;
+
+        if (!$created_at) {
+            $created_at = date("Y-m-d H:i:s");
+        } else {
+            $date = new \DateTime($created_at);
+            $date->setTimezone(new \DateTimeZone("Utc"));
+            $created_at = $date->format('Y-m-d H:i:s');
+        }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('sender', $sender);
+        $stmt->bindParam('thread', $thread);
+        $stmt->bindParam('title', $title);
+        $stmt->bindParam('text', $text);
+        $stmt->bindParam('image', $image);
+        $stmt->bindParam('created_at', $created_at);
+        $stmt->bindParam('payload', $payload);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function getRecord($collection, $id)
     {
         $pdo = $this->getPdo();
@@ -338,6 +443,26 @@ class Database
 
         $stmt = $pdo->prepare($query);
         $stmt->bindParam('id', $id);
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function getRecordByRecipientSender($collection, $recipient, $sender)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $query = "
+                SELECT * FROM $collection
+                WHERE recipient = :recipient
+                AND sender = :sender
+            ";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('recipient', $recipient);
+        $stmt->bindParam('sender', $sender);
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -363,7 +488,30 @@ class Database
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function deleteAll($collection, $recipient): bool
+    public function deleteAll($collection, array $data): bool
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        foreach ($data as $key => $item){
+            if($item){
+                /** @noinspection SqlDialectInspection */
+                $query = "
+                    DELETE FROM \"$collection\" 
+                    WHERE \"$key\" = :$key
+                ";
+
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam($key, $item);
+                $stmt->execute();
+
+                return true;
+            }
+        }
+    }
+
+    public function deleteAllByThread($collection, $recipient, $thread): bool
     {
         $pdo = $this->getPdo();
 
@@ -373,6 +521,7 @@ class Database
         $query = "
             DELETE FROM \"$collection\" 
             WHERE \"recipient\" = :recipient
+            AND \"thread\" IN ($thread)
         ";
 
         $stmt = $pdo->prepare($query);

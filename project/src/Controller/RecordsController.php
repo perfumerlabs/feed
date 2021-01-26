@@ -5,7 +5,9 @@ namespace Feed\Controller;
 
 use Feed\Repository\RecordRepository;
 use Feed\Service\Badges;
+use Feed\Service\Centrifugo;
 use Feed\Service\Database;
+use Perfumer\Helper\Arr;
 
 class RecordsController extends LayoutController
 {
@@ -49,23 +51,80 @@ class RecordsController extends LayoutController
         ]);
     }
 
-    public function delete()
+    public function post()
     {
         $collection = $this->f('collection');
-        $recipient = $this->f('recipient');
-        $badge_user = $this->f('badge_user');
+        $recipients = (array) $this->f('recipients');
 
         $this->validateCollection($collection);
-        $this->validateNotEmpty($recipient, 'recipient');
+        $this->validateNotEmpty($recipients, 'recipients');
+
+        $data = Arr::fetch($this->f(), [
+            'sender',
+            'thread',
+            'title',
+            'text',
+            'image',
+            'created_at',
+            'payload'
+        ]);
 
         /** @var Database $database */
         $database = $this->s('database');
 
-        $deleted = $database->deleteAll($collection, $recipient);
+        $con = $database->getPdo();
+        $con->beginTransaction();
 
-        if ($deleted && $this->hasBadges()){
+        try {
+            $inserted_ids = $database->insertMultiple($collection, $recipients, $data);
+
+            if($inserted_ids) {
+                /** @var RecordRepository $repository */
+                $repository = $this->s('repository.record');
+
+                $this->setContent([
+                    'ids' => $repository->format($data)
+                ]);
+            }
+
+            $con->commit();
+        } catch (\Throwable $e) {
+            $con->rollBack();
+
+            $this->forward('error', 'internalServerError', [$e]);
+        }
+    }
+
+    public function delete()
+    {
+        $collection = $this->f('collection');
+        $badge_user = $this->f('badge_user');
+
+        $data = [
+            'recipient' => $this->f('recipient'),
+            'sender' => $this->f('sender'),
+            'thread' => $this->f('thread')
+        ];
+
+        $this->validateCollection($collection);
+        $this->validateNotEmptyOneOfArray($data);
+
+        /** @var Database $database */
+        $database = $this->s('database');
+
+        if(!$data['thread']) {
+            $deleted = $database->deleteAll($collection, $data);
+        }else{
+            if(is_array($data['thread'])){
+                $data['thread'] = '\'' . implode('\',\'', $data['thread']) . '\'';
+            }
+
+            $deleted = $database->deleteAllByThread($collection, $data['recipient'], $data['thread']);
+        }
+
+        if ($deleted && $this->hasBadges() && $data['recipient']){
             if (!$badge_user) {
-                $badge_user = $recipient;
+                $badge_user = $data['recipient'];
             }
 
             $this->getProxy()->deferCallable(function () use ($collection, $badge_user) {
