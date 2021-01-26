@@ -24,6 +24,7 @@ class RecordsController extends LayoutController
         $search = $this->f('search');
         $id = $this->f('id');
         $limit = $this->f('limit');
+        $offset = $this->f('offset');
         $order = $this->f('order', 'desc');
         $is_read = $this->f('is_read');
 
@@ -41,6 +42,7 @@ class RecordsController extends LayoutController
             'limit' => $limit,
             'order' => $order,
             'is_read' => $is_read,
+            'offset' => $offset,
         ]);
 
         /** @var RecordRepository $repository */

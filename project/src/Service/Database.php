@@ -131,6 +131,7 @@ class Database
         $order = $data['order'] ?? null;
         $is_read = $data['is_read'] ?? null;
         $user = $data['user'] ?? null;
+        $offset = $data['offset'] ?? null;
 
         $pdo = $this->getPdo();
 
@@ -164,6 +165,8 @@ class Database
             }
         }
 
+        $offset = $offset ? " OFFSET $offset " : '';
+
         if ($thread) {
             $thread = "'" . implode("','", is_array($thread) ? $thread : [$thread]) . "'";
 
@@ -191,6 +194,7 @@ class Database
                 $where
                 ORDER BY created_at $order
                 LIMIT $limit
+                $offset
             ";
 
         $stmt = $pdo->prepare($query);
