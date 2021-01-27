@@ -394,20 +394,11 @@ class Database
 
         $insert = '';
 
-        for ($b = 0; $b < count($recipients); $b++){
-            for ($i = 0; $i < count($records); $i++){
-                $insert .= "(:recipient$b, :sender$i, :thread$i, :title$i, :text$i, :image$i, :created_at$i, :payload$i),";
-            }
-        }
-
-        /** @noinspection SqlDialectInspection */
-        $query = "
-            INSERT INTO \"$collection\" (\"recipient\", \"sender\", \"thread\", \"title\", \"text\", \"image\", \"created_at\", \"payload\")
-            VALUES $insert
-            RETURNING \"id\"
-        ";
-
-        $stmt = $pdo->prepare($query);
+//        for ($b = 0; $b < count($recipients); $b++){
+//            for ($i = 0; $i < count($records); $i++){
+//                $insert .= "(:recipient$b, :sender$i, :thread$i, :title$i, :text$i, :image$i, :created_at$i, :payload$i),";
+//            }
+//        }
 
         foreach ($recipients as $key => $recipient){
             foreach ($records as $key2 => $record){
@@ -427,20 +418,51 @@ class Database
                     $created_at = $date->format('Y-m-d H:i:s');
                 }
 
-                $stmt->bindParam("recipient$key", $recipient);
-                $stmt->bindParam("sender$key2", $sender);
-                $stmt->bindParam("thread$key2", $thread);
-                $stmt->bindParam("title$key2", $title);
-                $stmt->bindParam("text$key2", $text);
-                $stmt->bindParam("image$key2", $image);
-                $stmt->bindParam("created_at$key2", $created_at);
-                $stmt->bindParam("payload$key2", $payload);
+                $insert .= "('$recipient', '$sender', '$thread', '$title', '$text', '$image', '$created_at', '$payload'),";
             }
         }
 
-        $stmt->execute();
+        $insert = mb_substr($insert, 0, -1);
+        /** @noinspection SqlDialectInspection */
+        $query = "
+            INSERT INTO \"$collection\" (\"recipient\", \"sender\", \"thread\", \"title\", \"text\", \"image\", \"created_at\", \"payload\")
+            VALUES  $insert
+        ";
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare($query);
+
+//        foreach ($recipients as $key => $recipient){
+//            foreach ($records as $key2 => $record){
+//                $created_at = $record['created_at'] ?? null;
+//                $sender = $record['sender'] ?? null;
+//                $thread = $record['thread'] ?? null;
+//                $title = $record['title'] ?? null;
+//                $text = $record['text'] ?? null;
+//                $image = $record['image'] ?? null;
+//                $payload = array_key_exists('payload', $record) ? json_encode($record['payload']) : null;
+//                if ($sender === 862232){
+////                    var_dump($record);exit();
+//                }
+//                if (!$created_at) {
+//                    $created_at = date("Y-m-d H:i:s");
+//                } else {
+//                    $date = new \DateTime($created_at);
+//                    $date->setTimezone(new \DateTimeZone("Utc"));
+//                    $created_at = $date->format('Y-m-d H:i:s');
+//                }
+////                var_dump("title$key2 $title");
+//                $stmt->bindParam(sprintf("\$" . $key), $recipient, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $sender, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $thread, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $title, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $text, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $image, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $created_at, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $payload, \PDO::PARAM_STR);
+//            }
+//        }
+//        exit();
+        return $stmt->execute();
     }
 
     public function getRecord($collection, $id)

@@ -70,18 +70,12 @@ class RecordsController extends LayoutController
         $con->beginTransaction();
 
         try {
-            $inserted_ids = $database->insertMultiple($collection, $recipients, $records);
-
-            if($inserted_ids) {
-                $this->setContent([
-                    'ids' => $inserted_ids
-                ]);
-            }
+            $this->setStatus($database->insertMultiple($collection, $recipients, $records));
 
             $con->commit();
         } catch (\Throwable $e) {
             $con->rollBack();
-
+            
             $this->forward('error', 'internalServerError', [$e]);
         }
     }
