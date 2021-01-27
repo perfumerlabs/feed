@@ -57,19 +57,11 @@ class RecordsController extends LayoutController
     {
         $collection = $this->f('collection');
         $recipients = (array) $this->f('recipients');
+        $records = (array) $this->f('records');
 
         $this->validateCollection($collection);
         $this->validateNotEmpty($recipients, 'recipients');
-
-        $data = Arr::fetch($this->f(), [
-            'sender',
-            'thread',
-            'title',
-            'text',
-            'image',
-            'created_at',
-            'payload'
-        ]);
+        $this->validateNotEmpty($records, 'records');
 
         /** @var Database $database */
         $database = $this->s('database');
@@ -78,14 +70,11 @@ class RecordsController extends LayoutController
         $con->beginTransaction();
 
         try {
-            $inserted_ids = $database->insertMultiple($collection, $recipients, $data);
+            $inserted_ids = $database->insertMultiple($collection, $recipients, $records);
 
             if($inserted_ids) {
-                /** @var RecordRepository $repository */
-                $repository = $this->s('repository.record');
-
                 $this->setContent([
-                    'ids' => $repository->format($data)
+                    'ids' => $inserted_ids
                 ]);
             }
 

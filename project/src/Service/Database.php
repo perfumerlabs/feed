@@ -386,7 +386,7 @@ class Database
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function insertMultiple($collection, $recipients, array $data)
+    public function insertMultiple($collection, $recipients, array $records)
     {
         $pdo = $this->getPdo();
 
@@ -394,8 +394,10 @@ class Database
 
         $insert = '';
 
-        foreach ($recipients as $recipient){
-            $insert .= "($recipient, :sender, :thread, :title, :text, :image, :created_at, :payload),";
+        for ($b = 0; $b < count($recipients); $b++){
+            for ($i = 0; $i < count($records); $i++){
+                $insert .= "(:recipient$b, :sender$i, :thread$i, :title$i, :text$i, :image$i, :created_at$i, :payload$i),";
+            }
         }
 
         /** @noinspection SqlDialectInspection */
@@ -405,30 +407,37 @@ class Database
             RETURNING \"id\"
         ";
 
-        $created_at = $data['created_at'] ?? null;
-        $sender = $data['sender'] ?? null;
-        $thread = $data['thread'] ?? null;
-        $title = $data['title'] ?? null;
-        $text = $data['text'] ?? null;
-        $image = $data['image'] ?? null;
-        $payload = array_key_exists('payload', $data) ? json_encode($data['payload']) : null;
+        $stmt = $pdo->prepare($query);
 
-        if (!$created_at) {
-            $created_at = date("Y-m-d H:i:s");
-        } else {
-            $date = new \DateTime($created_at);
-            $date->setTimezone(new \DateTimeZone("Utc"));
-            $created_at = $date->format('Y-m-d H:i:s');
+        foreach ($recipients as $key => $recipient){
+            foreach ($records as $key2 => $record){
+                $created_at = $record['created_at'] ?? null;
+                $sender = $record['sender'] ?? null;
+                $thread = $record['thread'] ?? null;
+                $title = $record['title'] ?? null;
+                $text = $record['text'] ?? null;
+                $image = $record['image'] ?? null;
+                $payload = array_key_exists('payload', $record) ? json_encode($record['payload']) : null;
+
+                if (!$created_at) {
+                    $created_at = date("Y-m-d H:i:s");
+                } else {
+                    $date = new \DateTime($created_at);
+                    $date->setTimezone(new \DateTimeZone("Utc"));
+                    $created_at = $date->format('Y-m-d H:i:s');
+                }
+
+                $stmt->bindParam("recipient$key", $recipient);
+                $stmt->bindParam("sender$key2", $sender);
+                $stmt->bindParam("thread$key2", $thread);
+                $stmt->bindParam("title$key2", $title);
+                $stmt->bindParam("text$key2", $text);
+                $stmt->bindParam("image$key2", $image);
+                $stmt->bindParam("created_at$key2", $created_at);
+                $stmt->bindParam("payload$key2", $payload);
+            }
         }
 
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam('sender', $sender);
-        $stmt->bindParam('thread', $thread);
-        $stmt->bindParam('title', $title);
-        $stmt->bindParam('text', $text);
-        $stmt->bindParam('image', $image);
-        $stmt->bindParam('created_at', $created_at);
-        $stmt->bindParam('payload', $payload);
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
