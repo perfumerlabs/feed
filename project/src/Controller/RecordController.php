@@ -141,6 +141,7 @@ class RecordController extends LayoutController
                 $recipient = $record['recipient'] ?? null;
             }else{
                 $record = $database->getRecordByRecipientSender($collection, $data['recipient'], $data['sender']);
+                $database->delete($collection, $record['id']);
 
                 if(!$record){
                     return;

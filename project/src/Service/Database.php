@@ -493,6 +493,7 @@ class Database
                 SELECT * FROM $collection
                 WHERE recipient = :recipient
                 AND sender = :sender
+                LIMIT 1
             ";
 
         $stmt = $pdo->prepare($query);
