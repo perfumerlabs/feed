@@ -553,6 +553,7 @@ class Database
             'text',
             'image',
             'payload',
+            'created_at'
         ]);
 
         if(!$where || !$set){
@@ -659,6 +660,10 @@ class Database
 
         if(isset($set['image'])){
             $stmt->bindParam('new_image', $set['image'], \PDO::PARAM_STR);
+        }
+
+        if(isset($set['created_at'])){
+            $stmt->bindParam('new_created_at', $set['created_at'], \PDO::PARAM_STR);
         }
 
         if(isset($set['payload'])){

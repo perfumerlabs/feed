@@ -117,13 +117,16 @@ class RecordController extends LayoutController
     {
         $collection = $this->f('collection');
         $badge_user = $this->f('badge_user');
-        $id = $this->f('id');
+
+        $data = [
+            'recipient' => $this->f('recipient'),
+            'sender' => $this->f('sender'),
+            'id' => $this->f('id')
+        ];
 
         $this->validateCollection($collection);
 
-        if (!$id) {
-            $this->forward('error', 'pageNotFound', ["Record was not found"]);
-        }
+        $this->validateNotEmptyOneOfArray($data);
 
         /** @var Database $database */
         $database = $this->s('database');
@@ -132,19 +135,30 @@ class RecordController extends LayoutController
         $con->beginTransaction();
 
         try {
-            $data = $database->delete($collection, $id);
+            if($data['id']) {
+                $record = $database->delete($collection, $data['id']);
 
-            $recipient = $data['recipient'] ?? null;
+                $recipient = $record['recipient'] ?? null;
+            }else{
+                $record = $database->getRecordByRecipientSender($collection, $data['recipient'], $data['sender']);
+
+                if(!$record){
+                    return;
+                }
+
+                $data['id'] = $record['id'];
+                $recipient = $data['recipient'];
+            }
 
             if (!$badge_user) {
                 $badge_user = $recipient;
             }
 
             if ($badge_user && $this->hasBadges()) {
-                $this->getProxy()->deferCallable(function () use ($collection, $badge_user, $id) {
+                $this->getProxy()->deferCallable(function () use ($collection, $badge_user, $data) {
                     /** @var Badges $badges */
                     $badges = $this->s('badges');
-                    $badges->deleteRecord($collection, $badge_user, $id);
+                    $badges->deleteRecord($collection, $badge_user, $data['id']);
                 });
             }
 
