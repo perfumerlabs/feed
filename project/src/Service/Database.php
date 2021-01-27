@@ -658,47 +658,47 @@ class Database
             $stmt->bindParam('user_where', $user_where, \PDO::PARAM_STR);
         }
 
-        if(isset($where['recipient'])){
+        if(array_key_exists('recipient', $where)){
             $stmt->bindParam('recipient', $where['recipient'], \PDO::PARAM_STR);
         }
 
-        if(isset($where['sender'])){
+        if(array_key_exists('sender', $where)){
             $stmt->bindParam('sender', $where['sender'], \PDO::PARAM_STR);
         }
 
-        if(isset($where['thread'])){
+        if(array_key_exists('thread', $where)){
             $stmt->bindParam('thread', $where['thread'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['recipient'])){
+        if(array_key_exists('recipient', $set)){
             $stmt->bindParam('new_recipient', $set['recipient'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['sender'])){
+        if(array_key_exists('sender', $set)){
             $stmt->bindParam('new_sender', $set['sender'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['thread'])){
+        if(array_key_exists('thread', $set)){
             $stmt->bindParam('new_thread', $set['thread'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['title'])){
+        if(array_key_exists('title', $set)){
             $stmt->bindParam('new_title', $set['title'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['text'])){
+        if(array_key_exists('text', $set)){
             $stmt->bindParam('new_text', $set['text'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['image'])){
+        if(array_key_exists('image', $set)){
             $stmt->bindParam('new_image', $set['image'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['created_at'])){
+        if(array_key_exists('created_at', $set)){
             $stmt->bindParam('new_created_at', $set['created_at'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['payload'])){
+        if(array_key_exists('payload', $set)){
             $payload = json_encode($set['payload'], true);
             $stmt->bindParam('new_payload', $payload);
         }
