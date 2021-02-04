@@ -402,12 +402,12 @@ class Database
 
         foreach ($recipients as $key => $recipient){
             foreach ($records as $key2 => $record){
-                $created_at = $record['created_at'] ?? null;
-                $sender = $record['sender'] ?? null;
-                $thread = $record['thread'] ?? null;
-                $title = $record['title'] ?? null;
-                $text = $record['text'] ?? null;
-                $image = $record['image'] ?? null;
+                $created_at = array_key_exists('created_at', $record) ? pg_escape_string($record['created_at']) : null;
+                $sender = array_key_exists('sender', $record) ? pg_escape_string($record['sender']) : null;
+                $thread = array_key_exists('thread', $record) ? pg_escape_string($record['thread']) : null;
+                $title = array_key_exists('title', $record) ? pg_escape_string($record['title']) : null;
+                $text = array_key_exists('text', $record) ? pg_escape_string($record['text']) : null;
+                $image = array_key_exists('image', $record) ? pg_escape_string($record['image']) : null;
                 $payload = array_key_exists('payload', $record) ? json_encode($record['payload']) : null;
 
                 if (!$created_at) {
