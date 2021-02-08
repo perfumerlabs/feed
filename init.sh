@@ -39,21 +39,31 @@ sed -i "s/listen.owner = www-data/listen.owner = feed/g" /etc/php/7.4/fpm/pool.d
 sed -i "s/listen.group = www-data/listen.group = feed/g" /etc/php/7.4/fpm/pool.d/www.conf
 sed -i "s/;catch_workers_output = yes/catch_workers_output = yes/g" /etc/php/7.4/fpm/pool.d/www.conf
 
-sed -i "s/FEED_TIMEZONE/$FEED_TIMEZONE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/CENTRIFUGO_HOST/$CENTRIFUGO_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/CENTRIFUGO_API_KEY/$CENTRIFUGO_API_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/CENTRIFUGO_SECRET_KEY/$CENTRIFUGO_SECRET_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/BADGES_HOST/$BADGES_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
-sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
-sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/propel/connection/propel.php
-sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/propel/connection/propel.php
-sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/propel/connection/propel.php
-sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
+if [ $DEV != 'true' ]; then
+  sed -i "s/\$this->addResources(__DIR__ \. '\/\.\.\/env\.php');//g" /opt/feed/src/Application.php
+  sed -i "s/FEED_TIMEZONE/$FEED_TIMEZONE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/CENTRIFUGO_HOST/$CENTRIFUGO_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/CENTRIFUGO_API_KEY/$CENTRIFUGO_API_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/CENTRIFUGO_SECRET_KEY/$CENTRIFUGO_SECRET_KEY_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/BADGES_HOST/$BADGES_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+  sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
+  sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/propel/connection/propel.php
+  sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/propel/connection/propel.php
+  sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/propel/connection/propel.php
+  sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
+fi
+
+if [ $DEV = 'true' ]; then
+  set -x \
+  && cd /opt/feed \
+  && cp env.example.php env.php \
+  && cp propel.example.php propel.php
+fi
 
 set -x \
 && cd /opt/feed \
