@@ -41,15 +41,15 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFeedCollectionQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildFeedCollectionQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildFeedCollection findOne(ConnectionInterface $con = null) Return the first ChildFeedCollection matching the query
+ * @method     ChildFeedCollection|null findOne(ConnectionInterface $con = null) Return the first ChildFeedCollection matching the query
  * @method     ChildFeedCollection findOneOrCreate(ConnectionInterface $con = null) Return the first ChildFeedCollection matching the query, or a new ChildFeedCollection object populated from the query conditions when no match is found
  *
- * @method     ChildFeedCollection findOneById(int $id) Return the first ChildFeedCollection filtered by the id column
- * @method     ChildFeedCollection findOneByName(string $name) Return the first ChildFeedCollection filtered by the name column
- * @method     ChildFeedCollection findOneByWebsocketModule(string $websocket_module) Return the first ChildFeedCollection filtered by the websocket_module column
- * @method     ChildFeedCollection findOneByBadgesCollection(string $badges_collection) Return the first ChildFeedCollection filtered by the badges_collection column
- * @method     ChildFeedCollection findOneByBadgesPrefix(string $badges_prefix) Return the first ChildFeedCollection filtered by the badges_prefix column
- * @method     ChildFeedCollection findOneByCreatedAt(string $created_at) Return the first ChildFeedCollection filtered by the created_at column *
+ * @method     ChildFeedCollection|null findOneById(int $id) Return the first ChildFeedCollection filtered by the id column
+ * @method     ChildFeedCollection|null findOneByName(string $name) Return the first ChildFeedCollection filtered by the name column
+ * @method     ChildFeedCollection|null findOneByWebsocketModule(string $websocket_module) Return the first ChildFeedCollection filtered by the websocket_module column
+ * @method     ChildFeedCollection|null findOneByBadgesCollection(string $badges_collection) Return the first ChildFeedCollection filtered by the badges_collection column
+ * @method     ChildFeedCollection|null findOneByBadgesPrefix(string $badges_prefix) Return the first ChildFeedCollection filtered by the badges_prefix column
+ * @method     ChildFeedCollection|null findOneByCreatedAt(string $created_at) Return the first ChildFeedCollection filtered by the created_at column *
 
  * @method     ChildFeedCollection requirePk($key, ConnectionInterface $con = null) Return the ChildFeedCollection by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFeedCollection requireOne(ConnectionInterface $con = null) Return the first ChildFeedCollection matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found

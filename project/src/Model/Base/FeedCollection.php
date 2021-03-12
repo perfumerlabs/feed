@@ -78,28 +78,28 @@ abstract class FeedCollection implements ActiveRecordInterface
     /**
      * The value for the websocket_module field.
      *
-     * @var        string
+     * @var        string|null
      */
     protected $websocket_module;
 
     /**
      * The value for the badges_collection field.
      *
-     * @var        string
+     * @var        string|null
      */
     protected $badges_collection;
 
     /**
      * The value for the badges_prefix field.
      *
-     * @var        string
+     * @var        string|null
      */
     protected $badges_prefix;
 
     /**
      * The value for the created_at field.
      *
-     * @var        DateTime
+     * @var        DateTime|null
      */
     protected $created_at;
 
@@ -359,7 +359,7 @@ abstract class FeedCollection implements ActiveRecordInterface
     /**
      * Get the [websocket_module] column value.
      *
-     * @return string
+     * @return string|null
      */
     public function getWebsocketModule()
     {
@@ -369,7 +369,7 @@ abstract class FeedCollection implements ActiveRecordInterface
     /**
      * Get the [badges_collection] column value.
      *
-     * @return string
+     * @return string|null
      */
     public function getBadgesCollection()
     {
@@ -379,7 +379,7 @@ abstract class FeedCollection implements ActiveRecordInterface
     /**
      * Get the [badges_prefix] column value.
      *
-     * @return string
+     * @return string|null
      */
     public function getBadgesPrefix()
     {
@@ -390,14 +390,14 @@ abstract class FeedCollection implements ActiveRecordInterface
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
-     * @param      string|null $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
+     * @param string|null $format The date/time format string (either date()-style or strftime()-style).
+     *   If format is NULL, then the raw DateTime object will be returned.
      *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
+     * @return string|DateTime|null Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
      *
      * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getCreatedAt($format = NULL)
+    public function getCreatedAt($format = null)
     {
         if ($format === null) {
             return $this->created_at;
@@ -509,7 +509,7 @@ abstract class FeedCollection implements ActiveRecordInterface
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
+     * @param  string|integer|\DateTimeInterface|null $v string, integer (timestamp), or \DateTimeInterface value.
      *               Empty strings are treated as NULL.
      * @return $this|\Feed\Model\FeedCollection The current object (for fluent API support)
      */
@@ -960,7 +960,7 @@ abstract class FeedCollection implements ActiveRecordInterface
             $keys[5] => $this->getCreatedAt(),
         );
         if ($result[$keys[5]] instanceof \DateTimeInterface) {
-            $result[$keys[5]] = $result[$keys[5]]->format('c');
+            $result[$keys[5]] = $result[$keys[5]]->format('Y-m-d H:i:s.u');
         }
 
         $virtualColumns = $this->virtualColumns;

@@ -1,60 +1,32 @@
-<?php
+<?php /** @noinspection PhpRedundantOptionalArgumentInspection */
+
+/** @noinspection SqlNoDataSourceInspection */
 
 namespace Feed\Service;
 
-use Envms\FluentPDO\Query;
 use Feed\Model\FeedCollectionQuery;
 use Feed\Model\Map\FeedCollectionTableMap;
 use Perfumer\Helper\Arr;
-use Perfumer\Helper\Text;
 use Propel\Runtime\Propel;
 
 class Database
 {
-    private $db;
-
-    private $host;
-
-    private $port;
-
-    private $username;
-
-    private $password;
-
     private $timezone;
 
     private $pdo;
 
-    public function __construct(
-        $db,
-        $host,
-        $port,
-        $username,
-        $password,
-        $timezone
-    )
+    public function __construct($timezone)
     {
-        $this->db = $db;
-        $this->host = $host;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
         $this->timezone = $timezone;
     }
 
     public function getPdo()
     {
-
         if (!$this->pdo) {
             $this->pdo = Propel::getWriteConnection(FeedCollectionTableMap::DATABASE_NAME);
         }
 
         return $this->pdo;
-    }
-
-    public function getQuery()
-    {
-        return new Query($this->pdo);
     }
 
     public function getCollectionName($collection)

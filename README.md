@@ -14,7 +14,7 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.3.0
+-d perfumerlabs/feed:v1.4.0
 ```
 
 Database must be created before container startup.
@@ -30,6 +30,7 @@ Environment variables
 - PG_HOST - PostgreSQL host. Required.
 - PG_PORT - PostgreSQL port. Default value is 5432.
 - PG_DATABASE - PostgreSQL database name. Required.
+- PG_SCHEMA - PostgreSQL database schema. Default is "public".
 - PG_USER - PostgreSQL user name. Required.
 - PG_PASSWORD - PostgreSQL user password. Required.
 - PHP_PM_MAX_CHILDREN - number of FPM workers. Default value is 10.

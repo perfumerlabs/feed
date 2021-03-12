@@ -12,7 +12,8 @@ return [
                     'settings' => [
                         'charset' => 'utf8',
                         'queries' => [
-                            'utf8' => "SET NAMES 'UTF8'"
+                            'utf8' => "SET NAMES 'UTF8'",
+                            'schema' => "SET search_path TO PG_SCHEMA"
                         ]
                     ],
                     'attributes' => []

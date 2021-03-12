@@ -134,6 +134,63 @@ class FeedCollectionTableMap extends TableMap
     );
 
     /**
+     * Holds a list of column names and their normalized version.
+     *
+     * @var string[]
+     */
+    protected $normalizedColumnNameMap = [
+
+        'Id' => 'ID',
+        'FeedCollection.Id' => 'ID',
+        'id' => 'ID',
+        'feedCollection.id' => 'ID',
+        'FeedCollectionTableMap::COL_ID' => 'ID',
+        'COL_ID' => 'ID',
+        'id' => 'ID',
+        'feed_collection.id' => 'ID',
+        'Name' => 'NAME',
+        'FeedCollection.Name' => 'NAME',
+        'name' => 'NAME',
+        'feedCollection.name' => 'NAME',
+        'FeedCollectionTableMap::COL_NAME' => 'NAME',
+        'COL_NAME' => 'NAME',
+        'name' => 'NAME',
+        'feed_collection.name' => 'NAME',
+        'WebsocketModule' => 'WEBSOCKET_MODULE',
+        'FeedCollection.WebsocketModule' => 'WEBSOCKET_MODULE',
+        'websocketModule' => 'WEBSOCKET_MODULE',
+        'feedCollection.websocketModule' => 'WEBSOCKET_MODULE',
+        'FeedCollectionTableMap::COL_WEBSOCKET_MODULE' => 'WEBSOCKET_MODULE',
+        'COL_WEBSOCKET_MODULE' => 'WEBSOCKET_MODULE',
+        'websocket_module' => 'WEBSOCKET_MODULE',
+        'feed_collection.websocket_module' => 'WEBSOCKET_MODULE',
+        'BadgesCollection' => 'BADGES_COLLECTION',
+        'FeedCollection.BadgesCollection' => 'BADGES_COLLECTION',
+        'badgesCollection' => 'BADGES_COLLECTION',
+        'feedCollection.badgesCollection' => 'BADGES_COLLECTION',
+        'FeedCollectionTableMap::COL_BADGES_COLLECTION' => 'BADGES_COLLECTION',
+        'COL_BADGES_COLLECTION' => 'BADGES_COLLECTION',
+        'badges_collection' => 'BADGES_COLLECTION',
+        'feed_collection.badges_collection' => 'BADGES_COLLECTION',
+        'BadgesPrefix' => 'BADGES_PREFIX',
+        'FeedCollection.BadgesPrefix' => 'BADGES_PREFIX',
+        'badgesPrefix' => 'BADGES_PREFIX',
+        'feedCollection.badgesPrefix' => 'BADGES_PREFIX',
+        'FeedCollectionTableMap::COL_BADGES_PREFIX' => 'BADGES_PREFIX',
+        'COL_BADGES_PREFIX' => 'BADGES_PREFIX',
+        'badges_prefix' => 'BADGES_PREFIX',
+        'feed_collection.badges_prefix' => 'BADGES_PREFIX',
+        'CreatedAt' => 'CREATED_AT',
+        'FeedCollection.CreatedAt' => 'CREATED_AT',
+        'createdAt' => 'CREATED_AT',
+        'feedCollection.createdAt' => 'CREATED_AT',
+        'FeedCollectionTableMap::COL_CREATED_AT' => 'CREATED_AT',
+        'COL_CREATED_AT' => 'CREATED_AT',
+        'created_at' => 'CREATED_AT',
+        'feed_collection.created_at' => 'CREATED_AT',
+    ];
+
+    /**
      * Initialize the table attributes and columns
      * Relations are not initialized by this method since they are lazy loaded
      *
@@ -333,6 +390,36 @@ class FeedCollectionTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.badges_collection');
             $criteria->addSelectColumn($alias . '.badges_prefix');
             $criteria->addSelectColumn($alias . '.created_at');
+        }
+    }
+
+    /**
+     * Remove all the columns needed to create a new object.
+     *
+     * Note: any columns that were marked with lazyLoad="true" in the
+     * XML schema will not be removed as they are only loaded on demand.
+     *
+     * @param Criteria $criteria object containing the columns to remove.
+     * @param string   $alias    optional table alias
+     * @throws PropelException Any exceptions caught during processing will be
+     *                         rethrown wrapped into a PropelException.
+     */
+    public static function removeSelectColumns(Criteria $criteria, $alias = null)
+    {
+        if (null === $alias) {
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_ID);
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_NAME);
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_WEBSOCKET_MODULE);
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_BADGES_COLLECTION);
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_BADGES_PREFIX);
+            $criteria->removeSelectColumn(FeedCollectionTableMap::COL_CREATED_AT);
+        } else {
+            $criteria->removeSelectColumn($alias . '.id');
+            $criteria->removeSelectColumn($alias . '.name');
+            $criteria->removeSelectColumn($alias . '.websocket_module');
+            $criteria->removeSelectColumn($alias . '.badges_collection');
+            $criteria->removeSelectColumn($alias . '.badges_prefix');
+            $criteria->removeSelectColumn($alias . '.created_at');
         }
     }
 

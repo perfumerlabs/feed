@@ -6,6 +6,7 @@ return [
         'project'       => 'feed',
         'database'      => 'pgsql',
         'dsn'           => 'pgsql:host=PG_HOST;port=PG_PORT;dbname=PG_DATABASE',
+        'db_schema'     => 'PG_SCHEMA',
         'db_user'       => 'PG_USER',
         'db_password'   => 'PG_PASSWORD',
         'platform'      => 'pgsql',
@@ -17,6 +18,7 @@ return [
     ],
     'database' => [
         'db' => 'PG_DATABASE',
+        'schema' => 'PG_SCHEMA',
         'host' => 'PG_HOST',
         'port' => 'PG_PORT',
         'username' => 'PG_USER',
