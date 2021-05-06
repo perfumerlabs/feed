@@ -16,7 +16,9 @@ return [
 
                 $r->addRoute('GET',  '/records', 'records.get');
                 $r->addRoute('PATCH',  '/records', 'records.patch');
+                $r->addRoute('POST',  '/records', 'records.post');
                 $r->addRoute('POST', '/records/read', 'records/read.post');
+                $r->addRoute('GET', '/records/count', 'records/count.get');
                 $r->addRoute('DELETE', '/records', 'records.delete');
             });
         }

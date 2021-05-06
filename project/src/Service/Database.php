@@ -34,6 +34,63 @@ class Database
         return 'feed_data_' . preg_replace('/[^a-zA-Z0-9_]/', '', $collection);
     }
 
+    public function getRecordsCount($collection, $recipient, $where, $group)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $select = $group ? ", $group as name" : '';
+
+        $query = "
+                SELECT COUNT(*) $select FROM $collection
+                WHERE recipient = :recipient
+            ";
+
+        if($where){
+            if ($where['sender'] ?? false) {
+                $query .= "AND sender = :sender ";
+            }
+
+
+            if ($where['thread'] ?? false) {
+                $thread = "'" . implode("','", is_array($where['thread']) ? $where['thread'] : [$where['thread']]) . "'";
+
+                $query .= "AND thread IN ($thread) ";
+            }
+
+
+            if (array_key_exists('is_read', $where) && !is_null($where['is_read'])) {
+                if ($where['is_read']) {
+                    $query .= "AND is_read = true ";
+                } else {
+                    $query .= "AND is_read = false ";
+                }
+            }
+        }
+
+        if($group){
+            $query .= " GROUP BY $group";
+        }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('recipient', $recipient);
+
+        if($where && $where['sender'] ?? false){
+            $stmt->bindParam('sender', $where['sender']);
+        }
+
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if($group){
+            return $result;
+        }else{
+            return $result[0]['count'];
+        }
+    }
+
     public function getRecords(array $data): array
     {
         $collection = $data['collection'] ?? null;
@@ -46,6 +103,7 @@ class Database
         $order = $data['order'] ?? null;
         $is_read = $data['is_read'] ?? null;
         $user = $data['user'] ?? null;
+        $offset = $data['offset'] ?? null;
 
         $pdo = $this->getPdo();
 
@@ -79,6 +137,8 @@ class Database
             }
         }
 
+        $offset = $offset ? " OFFSET $offset " : '';
+
         if ($thread) {
             $thread = "'" . implode("','", is_array($thread) ? $thread : [$thread]) . "'";
 
@@ -106,6 +166,7 @@ class Database
                 $where
                 ORDER BY created_at $order
                 LIMIT $limit
+                $offset
             ";
 
         $stmt = $pdo->prepare($query);
@@ -297,6 +358,85 @@ class Database
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    public function insertMultiple($collection, $recipients, array $records)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $insert = '';
+
+//        for ($b = 0; $b < count($recipients); $b++){
+//            for ($i = 0; $i < count($records); $i++){
+//                $insert .= "(:recipient$b, :sender$i, :thread$i, :title$i, :text$i, :image$i, :created_at$i, :payload$i),";
+//            }
+//        }
+
+        foreach ($recipients as $key => $recipient){
+            foreach ($records as $key2 => $record){
+                $created_at = array_key_exists('created_at', $record) ? pg_escape_string($record['created_at']) : null;
+                $sender = array_key_exists('sender', $record) ? pg_escape_string($record['sender']) : null;
+                $thread = array_key_exists('thread', $record) ? pg_escape_string($record['thread']) : null;
+                $title = array_key_exists('title', $record) ? pg_escape_string($record['title']) : null;
+                $text = array_key_exists('text', $record) ? pg_escape_string($record['text']) : null;
+                $image = array_key_exists('image', $record) ? pg_escape_string($record['image']) : null;
+                $payload = array_key_exists('payload', $record) ? json_encode($record['payload']) : null;
+
+                if (!$created_at) {
+                    $created_at = date("Y-m-d H:i:s");
+                } else {
+                    $date = new \DateTime($created_at);
+                    $date->setTimezone(new \DateTimeZone("Utc"));
+                    $created_at = $date->format('Y-m-d H:i:s');
+                }
+
+                $insert .= "('$recipient', '$sender', '$thread', '$title', '$text', '$image', '$created_at', '$payload'),";
+            }
+        }
+
+        $insert = mb_substr($insert, 0, -1);
+        /** @noinspection SqlDialectInspection */
+        $query = "
+            INSERT INTO \"$collection\" (\"recipient\", \"sender\", \"thread\", \"title\", \"text\", \"image\", \"created_at\", \"payload\")
+            VALUES  $insert
+        ";
+
+        $stmt = $pdo->prepare($query);
+
+//        foreach ($recipients as $key => $recipient){
+//            foreach ($records as $key2 => $record){
+//                $created_at = $record['created_at'] ?? null;
+//                $sender = $record['sender'] ?? null;
+//                $thread = $record['thread'] ?? null;
+//                $title = $record['title'] ?? null;
+//                $text = $record['text'] ?? null;
+//                $image = $record['image'] ?? null;
+//                $payload = array_key_exists('payload', $record) ? json_encode($record['payload']) : null;
+//                if ($sender === 862232){
+////                    var_dump($record);exit();
+//                }
+//                if (!$created_at) {
+//                    $created_at = date("Y-m-d H:i:s");
+//                } else {
+//                    $date = new \DateTime($created_at);
+//                    $date->setTimezone(new \DateTimeZone("Utc"));
+//                    $created_at = $date->format('Y-m-d H:i:s');
+//                }
+////                var_dump("title$key2 $title");
+//                $stmt->bindParam(sprintf("\$" . $key), $recipient, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $sender, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $thread, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $title, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $text, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $image, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $created_at, \PDO::PARAM_STR);
+//                $stmt->bindParam(sprintf("\$" . $key2 . $key), $payload, \PDO::PARAM_STR);
+//            }
+//        }
+//        exit();
+        return $stmt->execute();
+    }
+
     public function getRecord($collection, $id)
     {
         $pdo = $this->getPdo();
@@ -310,6 +450,27 @@ class Database
 
         $stmt = $pdo->prepare($query);
         $stmt->bindParam('id', $id);
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function getRecordByRecipientSender($collection, $recipient, $sender)
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        $query = "
+                SELECT * FROM $collection
+                WHERE recipient = :recipient
+                AND sender = :sender
+                LIMIT 1
+            ";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam('recipient', $recipient);
+        $stmt->bindParam('sender', $sender);
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -335,7 +496,30 @@ class Database
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function deleteAll($collection, $recipient): bool
+    public function deleteAll($collection, array $data): bool
+    {
+        $pdo = $this->getPdo();
+
+        $collection = $this->getCollectionName($collection);
+
+        foreach ($data as $key => $item){
+            if($item){
+                /** @noinspection SqlDialectInspection */
+                $query = "
+                    DELETE FROM \"$collection\" 
+                    WHERE \"$key\" = :$key
+                ";
+
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam($key, $item);
+                $stmt->execute();
+
+                return true;
+            }
+        }
+    }
+
+    public function deleteAllByThread($collection, $recipient, $thread): bool
     {
         $pdo = $this->getPdo();
 
@@ -345,6 +529,7 @@ class Database
         $query = "
             DELETE FROM \"$collection\" 
             WHERE \"recipient\" = :recipient
+            AND \"thread\" IN ($thread)
         ";
 
         $stmt = $pdo->prepare($query);
@@ -372,6 +557,7 @@ class Database
             'text',
             'image',
             'payload',
+            'created_at'
         ]);
 
         if(!$where || !$set){
@@ -444,43 +630,47 @@ class Database
             $stmt->bindParam('user_where', $user_where, \PDO::PARAM_STR);
         }
 
-        if(isset($where['recipient'])){
+        if(array_key_exists('recipient', $where)){
             $stmt->bindParam('recipient', $where['recipient'], \PDO::PARAM_STR);
         }
 
-        if(isset($where['sender'])){
+        if(array_key_exists('sender', $where)){
             $stmt->bindParam('sender', $where['sender'], \PDO::PARAM_STR);
         }
 
-        if(isset($where['thread'])){
+        if(array_key_exists('thread', $where)){
             $stmt->bindParam('thread', $where['thread'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['recipient'])){
+        if(array_key_exists('recipient', $set)){
             $stmt->bindParam('new_recipient', $set['recipient'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['sender'])){
+        if(array_key_exists('sender', $set)){
             $stmt->bindParam('new_sender', $set['sender'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['thread'])){
+        if(array_key_exists('thread', $set)){
             $stmt->bindParam('new_thread', $set['thread'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['title'])){
+        if(array_key_exists('title', $set)){
             $stmt->bindParam('new_title', $set['title'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['text'])){
+        if(array_key_exists('text', $set)){
             $stmt->bindParam('new_text', $set['text'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['image'])){
+        if(array_key_exists('image', $set)){
             $stmt->bindParam('new_image', $set['image'], \PDO::PARAM_STR);
         }
 
-        if(isset($set['payload'])){
+        if(array_key_exists('created_at', $set)){
+            $stmt->bindParam('new_created_at', $set['created_at'], \PDO::PARAM_STR);
+        }
+
+        if(array_key_exists('payload', $set)){
             $payload = json_encode($set['payload'], true);
             $stmt->bindParam('new_payload', $payload);
         }

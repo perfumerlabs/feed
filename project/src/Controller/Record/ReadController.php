@@ -13,13 +13,31 @@ class ReadController extends LayoutController
     {
         $collection = $this->f('collection');
         $id = (int) $this->f('id');
+        $recipient = $this->f('recipient');
+        $sender = $this->f('sender');
         $badge_user = $this->f('badge_user');
 
         $this->validateCollection($collection);
-        $this->validateNotEmpty($id, 'id');
+        $this->validateNotEmptyOneOfArray([
+            'id' => $id,
+            'recipient' => $recipient,
+            'sender' => $sender,
+        ]);
 
         /** @var Database $database */
         $database = $this->s('database');
+
+        if(!$id){
+            if($recipient && $sender) {
+                if($record = $database->getRecordByRecipientSender($collection, $recipient, $sender)){
+                    $id = $record['id'];
+                }
+            }
+
+            if(!$id){
+                $this->setStatusAndExit(false);
+            }
+        }
 
         $con = $database->getPdo();
         $con->beginTransaction();

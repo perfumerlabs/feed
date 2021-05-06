@@ -5,6 +5,7 @@ namespace Feed\Controller;
 use Perfumer\Framework\Controller\ViewController;
 use Perfumer\Framework\Router\Http\FastRouteRouterControllerHelpers;
 use Perfumer\Framework\View\StatusViewControllerHelpers;
+use Perfumer\Helper\Arr;
 
 class LayoutController extends ViewController
 {
@@ -16,6 +17,17 @@ class LayoutController extends ViewController
         if (!$var) {
             $this->forward('error', 'badRequest', ["\"$name\" parameter must be set"]);
         }
+    }
+
+    protected function validateNotEmptyOneOfArray(array $vars)
+    {
+        foreach ($vars as $var){
+            if($var){
+                return;
+            }
+        }
+
+        $this->forward('error', 'badRequest', [implode(', ', array_keys($vars)) . " one of this parameters must be set"]);
     }
 
     protected function validateRegex($var, $name, $regex)

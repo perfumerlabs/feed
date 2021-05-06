@@ -3,3 +3,7 @@
 nbproject
 /project/tmp/*
 /project/vendor/*
+/project/src/Resource/config/resources_shared.php
+/project/src/Resource/propel/connection/propel.php
+env.php
+propel.php
