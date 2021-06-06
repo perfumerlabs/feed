@@ -11,6 +11,8 @@ set -x \
 
 FEED_TIMEZONE_SED=${FEED_TIMEZONE//\//\\\/}
 FEED_TIMEZONE_SED=${FEED_TIMEZONE_SED//\./\\\.}
+PG_REAL_HOST_SED=${PG_REAL_HOST//\//\\\/}
+PG_REAL_HOST_SED=${PG_REAL_HOST_SED//\./\\\.}
 PG_HOST_SED=${PG_HOST//\//\\\/}
 PG_HOST_SED=${PG_HOST_SED//\./\\\.}
 PG_PASSWORD_SED=${PG_PASSWORD//\//\\\/}
@@ -40,6 +42,7 @@ sed -i "s/listen.group = www-data/listen.group = feed/g" /etc/php/7.4/fpm/pool.d
 sed -i "s/;catch_workers_output = yes/catch_workers_output = yes/g" /etc/php/7.4/fpm/pool.d/www.conf
 
 sed -i "s/FEED_TIMEZONE/$FEED_TIMEZONE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/PG_REAL_HOST/$PG_REAL_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/config/resources_shared.php
@@ -59,6 +62,6 @@ sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/propel/connecti
 
 set -x \
 && cd /opt/feed \
-&& sudo -u feed php cli framework propel/migrate
+&& sudo -u feed php cli feed startup
 
 touch /node_status_inited

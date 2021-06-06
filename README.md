@@ -9,15 +9,15 @@ Installation
 ```bash
 docker run \
 -p 80:80/tcp \
+-e PG_REAL_HOST=db \
 -e PG_HOST=db \
+-e PG_REAL_HOST=db \
 -e PG_PORT=5432 \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.4.0
+-d perfumerlabs/feed:v1.5.0
 ```
-
-Database must be created before container startup.
 
 Environment variables
 =====================
@@ -27,7 +27,8 @@ Environment variables
 - CENTRIFUGO_API_KEY - Centrifugo API Key. Optional.
 - CENTRIFUGO_SECRET_KEY - Centrifugo Secret Key. Optional.
 - BADGES_HOST - host of Badges server. Optional.
-- PG_HOST - PostgreSQL host. Required.
+- PG_HOST - PostgreSQL connection host. Required.
+- PG_REAL_HOST - PostgreSQL database instance host (not PgBouncer). Required.
 - PG_PORT - PostgreSQL port. Default value is 5432.
 - PG_DATABASE - PostgreSQL database name. Required.
 - PG_SCHEMA - PostgreSQL database schema. Default is "public".
@@ -576,6 +577,11 @@ Contributors
 Software
 ========
 
-1. Ubuntu 16.04 Xenial
-1. Nginx 1.16
+1. Ubuntu 18.04 Bionic
+1. Nginx 1.20
 1. PHP 7.4
+
+Contributing
+============
+
+Feel free to make any pull requests.
