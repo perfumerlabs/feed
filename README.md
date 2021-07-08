@@ -16,7 +16,7 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.5.0
+-d perfumerlabs/feed:v1.5.1
 ```
 
 Environment variables
