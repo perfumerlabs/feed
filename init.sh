@@ -59,7 +59,7 @@ sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/propel/connection/prope
 sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_DATABASE/$PG_DATABASE/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_SCHEMA/$PG_SCHEMA/g" /opt/feed/src/Resource/propel/connection/propel.php
-sed -i "s/PG_SLAVES/$PG_SLAVES_SED/g" /opt/box/src/Resource/config/resources_shared.php
+sed -i "s/PG_SLAVES/$PG_SLAVES_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_USER/$PG_USER/g" /opt/feed/src/Resource/propel/connection/propel.php
 sed -i "s/PG_PASSWORD/$PG_PASSWORD_SED/g" /opt/feed/src/Resource/propel/connection/propel.php
 
