@@ -274,7 +274,7 @@ class Database
 
         /** @noinspection SqlDialectInspection */
 
-        $query = sprintf('CREATE TABLE IF NOT EXISTS "public"."%s"
+        $query = sprintf('CREATE TABLE IF NOT EXISTS "%s"
                 (
                     "id" bigserial NOT NULL,
                     "recipient" VARCHAR(255) NOT NULL,
