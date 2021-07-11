@@ -24,6 +24,7 @@ return [
         'schema' => 'PG_SCHEMA',
         'user' => 'PG_USER',
         'password' => 'PG_PASSWORD',
+        'slaves' => 'PG_SLAVES',
     ],
     'database' => [
         'db' => 'PG_DATABASE',
