@@ -3,6 +3,7 @@
 namespace Feed\Controller;
 
 use Feed\Domain\CollectionDomain;
+use Feed\Facade\CollectionFacade;
 use Feed\Service\Database;
 
 class CollectionController extends LayoutController
@@ -23,26 +24,24 @@ class CollectionController extends LayoutController
         /** @var Database $database */
         $database = $this->s('database');
 
+        /** @var CollectionFacade $facade */
+        $facade = $this->s('facade.collection');
+
         $con = $database->getPdo();
         $con->beginTransaction();
 
         try {
-            $created = $database->createTable($name);
-
-            if ($created) {
-                /** @var CollectionDomain $domain */
-                $domain = $this->s('domain.collection');
-                $domain->save($name, [
-                    'websocket_module' => $websocket_module,
-                    'badges_collection' => $badges_collection,
-                    'badges_prefix' => $badges_prefix,
-                ]);
-            }
+            $facade->create($name, [
+                'websocket_module' => $websocket_module,
+                'badges_collection' => $badges_collection,
+                'badges_prefix' => $badges_prefix,
+            ]);
 
             $con->commit();
         } catch (\Throwable $e) {
-            $this->setStatus(false);
             $con->rollBack();
+
+            throw $e;
         }
     }
 
@@ -76,8 +75,9 @@ class CollectionController extends LayoutController
 
             $con->commit();
         } catch (\Throwable $e) {
-            $this->setStatus(false);
             $con->rollBack();
+
+            throw $e;
         }
     }
 }

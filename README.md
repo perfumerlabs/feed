@@ -16,13 +16,14 @@ docker run \
 -e PG_DATABASE=feed_db \
 -e PG_USER=user \
 -e PG_PASSWORD=password \
--d perfumerlabs/feed:v1.5.1
+-d perfumerlabs/feed:v1.6.0
 ```
 
 Environment variables
 =====================
 
 - FEED_TIMEZONE - Timezone of incoming or outcoming dates. Optional. Default is "Utc".
+- FEED_COLLECTIONS - Create collections on startup (list through comma). Optional.
 - CENTRIFUGO_HOST - host of centrifugo server. Optional.
 - CENTRIFUGO_API_KEY - Centrifugo API Key. Optional.
 - CENTRIFUGO_SECRET_KEY - Centrifugo Secret Key. Optional.

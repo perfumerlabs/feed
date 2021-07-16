@@ -56,6 +56,7 @@ RUN set -x\
     && chmod +x /usr/local/bin/init.sh
 
 ENV FEED_TIMEZONE "Utc"
+ENV FEED_COLLECTIONS ""
 ENV PG_REAL_HOST ''
 ENV PG_HOST postgresql
 ENV PG_PORT 5432

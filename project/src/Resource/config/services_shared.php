@@ -41,6 +41,15 @@ return [
         ]
     ],
 
+    'facade.collection' => [
+        'shared' => true,
+        'class' => 'Feed\\Facade\\CollectionFacade',
+        'arguments' => [
+            '#database',
+            '#domain.collection',
+        ],
+    ],
+
     'domain.collection' => [
         'shared' => true,
         'class' => 'Feed\\Domain\\CollectionDomain',

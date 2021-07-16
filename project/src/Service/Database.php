@@ -229,6 +229,7 @@ class Database
                 );', $name);
 
         $stmt = $pdo->prepare($query);
+
         if(!$stmt->execute()){
             return false;
         }

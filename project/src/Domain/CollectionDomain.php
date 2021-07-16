@@ -7,7 +7,7 @@ use Feed\Model\FeedCollectionQuery;
 
 class CollectionDomain
 {
-    public function save($name, array $data): ?FeedCollection
+    public function save($name, array $data = []): ?FeedCollection
     {
         $websocket_module = $data['websocket_module'] ?? null;
         $badges_collection = $data['badges_collection'] ?? null;

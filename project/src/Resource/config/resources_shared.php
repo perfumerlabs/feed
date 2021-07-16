@@ -35,6 +35,7 @@ return [
     ],
     'feed' => [
         'timezone' => 'FEED_TIMEZONE',
+        'collections' => 'FEED_COLLECTIONS',
     ],
     'centrifugo' => [
         'host' => 'CENTRIFUGO_HOST',

@@ -11,6 +11,8 @@ set -x \
 
 FEED_TIMEZONE_SED=${FEED_TIMEZONE//\//\\\/}
 FEED_TIMEZONE_SED=${FEED_TIMEZONE_SED//\./\\\.}
+FEED_COLLECTIONS_SED=${FEED_COLLECTIONS//\//\\\/}
+FEED_COLLECTIONS_SED=${FEED_COLLECTIONS_SED//\./\\\.}
 PG_REAL_HOST_SED=${PG_REAL_HOST//\//\\\/}
 PG_REAL_HOST_SED=${PG_REAL_HOST_SED//\./\\\.}
 PG_HOST_SED=${PG_HOST//\//\\\/}
@@ -42,6 +44,7 @@ sed -i "s/listen.group = www-data/listen.group = feed/g" /etc/php/7.4/fpm/pool.d
 sed -i "s/;catch_workers_output = yes/catch_workers_output = yes/g" /etc/php/7.4/fpm/pool.d/www.conf
 
 sed -i "s/FEED_TIMEZONE/$FEED_TIMEZONE_SED/g" /opt/feed/src/Resource/config/resources_shared.php
+sed -i "s/FEED_COLLECTIONS/$FEED_COLLECTIONS_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_REAL_HOST/$PG_REAL_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_HOST/$PG_HOST_SED/g" /opt/feed/src/Resource/config/resources_shared.php
 sed -i "s/PG_PORT/$PG_PORT/g" /opt/feed/src/Resource/config/resources_shared.php
